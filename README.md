@@ -4,6 +4,8 @@ Android library for my apps. Work smarter, not harder!
 
 Note: Library is still need some refinements.
 
+You can check the [developer documentation](https://github.com/Fox2Code/FoxCompat/tree/master/documentation)!
+
 ## Compatibility & Size
 
 ### Required libraries
