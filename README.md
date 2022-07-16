@@ -1,0 +1,63 @@
+# FoxCompat
+
+Android library for my apps. Work smarter, not harder!
+
+Note: Library is still need some refinements.
+
+## Compatibility & Size
+
+### Required libraries
+
+- `androidx.appcompat:appcompat:1.4.2` (Forks are also supported)
+- [`dev.rikka.rikkax.layoutinflater:layoutinflater:1.2.0`](https://github.com/RikkaApps/RikkaX/tree/master/layoutinflater)
+- [`dev.rikka.rikkax.insets:insets:1.2.0`](https://github.com/RikkaApps/RikkaX/tree/master/insets)
+
+Note: Optional libraries are imported automatically.
+
+### Optional libraries
+
+- `com.google.android.material:material:1.6.1` (Forks are also supported)
+- [`com.github.KieronQuinn:MonetCompat:0.4.1`](https://github.com/KieronQuinn/MonetCompat)
+- [`org.lsposed.hiddenapibypass:hiddenapibypass:4.3`](https://github.com/LSPosed/AndroidHiddenApiBypass)
+- [`com.github.tiann:FreeReflection:3.1.0`](https://github.com/tiann/FreeReflection)
+
+Note: Optional libraries are not imported automatically, and not required to use this library,
+but improve some features of the library.
+
+### Supported ROMs
+
+This library contain code to improve support for the following ROMs:
+
+- LineageOS/CyanogenMod (Including forks)
+- OneUI/SamsungExperience (Including ports)
+
+## Setup
+
+### Gradle
+
+Add jitpack, example to add to `settings.gradle`:
+```groovy
+// Only add if `dependencyResolutionManagement` already exists
+dependencyResolutionManagement {
+    repositories {
+        maven {
+            url 'https://jitpack.io'
+        }
+    }
+}
+```
+
+
+```groovy
+// Only add "repositories" if "dependencyResolutionManagement" didn't exists in "settings.gradle"
+repositories {
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+// Add to existing dependencies block
+dependencies {
+    implementation 'com.github.Fox2Code:FoxCompat:0.0.1'
+}
+```

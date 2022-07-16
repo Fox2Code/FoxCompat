@@ -1,0 +1,40 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.fox2code.foxcompat.hiddenapis'
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 33
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    if (System.getenv("CI") == null &&
+            System.getenv("JITPACK") == null &&
+            System.getenv("TRAVIS") == null) {
+        testCompileOnly 'org.robolectric:android-all:11-robolectric-6757853'
+        // https://github.com/LineageOS/android_lineage-sdk
+        testCompileOnly 'org.cyanogenmod:platform.sdk:5.+'
+    }
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}

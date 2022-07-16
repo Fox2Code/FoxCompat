@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FoxActivityView">
+        <attr name="assumeEmbeddable" format="boolean" />
+        <attr name="activity" format="string" />
+    </declare-styleable>
+
+    <!-- Note: Overrides populate these values by default -->
+    <declare-styleable name="FoxCompatTheme">
+        <attr name="systemAccentLight" format="color" />
+        <attr name="systemAccentVariantLight" format="color" />
+        <attr name="systemAccentDark" format="color" />
+        <attr name="systemAccentVariantDark" format="color" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="NullParent" />
+    <style name="FoxCompat" />
+    <style name="FoxCompat.Overrides" />
+    <style name="FoxCompat.Overrides.Base" parent="NullParent">
+        <item name="systemAccentLight">@color/accent_fallback_light</item>
+        <item name="systemAccentVariantLight">@color/accent_fallback_light</item>
+        <item name="systemAccentDark">@color/accent_fallback_dark</item>
+        <item name="systemAccentVariantDark">@color/accent_fallback_dark</item>
+    </style>
+
+    <style name="FoxCompat.Overrides.Base.System" parent="NullParent">
+        <item name="systemAccentLight">@color/system_accent_light</item>
+        <item name="systemAccentVariantLight">@color/system_accent_variant_light</item>
+        <item name="systemAccentDark">@color/system_accent_dark</item>
+        <item name="systemAccentVariantDark">@color/system_accent_variant_dark</item>
+    </style>
+
+
+    <style name="FoxCompat.Overrides.Base.Oxygen" parent="NullParent">
+        <item name="systemAccentLight">@color/accent_oxygen_light</item>
+        <item name="systemAccentVariantLight">@color/accent_oxygen_dark</item>
+        <item name="systemAccentDark">@color/accent_oxygen_dark</item>
+        <item name="systemAccentVariantDark">@color/accent_oxygen_light</item>
+    </style>
+
+    <style name="FoxCompat.Overrides.System" parent="NullParent">
+        <item name="systemAccentLight">@color/system_accent_light</item>
+        <item name="systemAccentVariantLight">@color/system_accent_variant_light</item>
+        <item name="systemAccentDark">@color/system_accent_dark</item>
+        <item name="systemAccentVariantDark">@color/system_accent_variant_dark</item>
+        <!-- Android support -->
+        <item name="android:colorEdgeEffect">@color/system_accent_light</item>
+        <item name="android:colorAccent">@color/system_accent_light</item>
+        <!-- AndroidX support -->
+        <item name="colorAccent">@color/system_accent_light</item>
+        <!-- Material support -->
+        <item name="colorPrimary">@color/system_accent_light</item>
+        <item name="colorPrimaryVariant">@color/system_accent_variant_light</item>
+    </style>
+
+    <style name="FoxCompat.Overrides.System.Dark" parent="NullParent">
+        <item name="systemAccentLight">@color/system_accent_light</item>
+        <item name="systemAccentVariantLight">@color/system_accent_variant_light</item>
+        <item name="systemAccentDark">@color/system_accent_dark</item>
+        <item name="systemAccentVariantDark">@color/system_accent_variant_dark</item>
+        <!-- Android support -->
+        <item name="android:colorEdgeEffect">@color/system_accent_dark</item>
+        <item name="android:colorAccent">@color/system_accent_dark</item>
+        <!-- AndroidX support -->
+        <item name="colorAccent">@color/system_accent_variant_dark</item>
+        <!-- Material support -->
+        <item name="colorPrimary">@color/system_accent_variant_dark</item>
+        <item name="colorPrimaryVariant">@color/system_accent_variant_dark</item>
+    </style>
+
+    <!-- Used for LineageOS implementation -->
+    <style name="FoxCompat.Overrides.System.Black" parent="NullParent">
+        <item name="systemAccentLight">@color/system_accent_light</item>
+        <item name="systemAccentVariantLight">@color/system_accent_variant_light</item>
+        <item name="systemAccentDark">@color/system_accent_dark</item>
+        <item name="systemAccentVariantDark">@color/system_accent_variant_dark</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <!-- Android support -->
+        <item name="android:colorEdgeEffect">@color/system_accent_dark</item>
+        <item name="android:colorAccent">@color/system_accent_dark</item>
+        <!-- AndroidX support -->
+        <item name="colorAccent">@color/system_accent_variant_dark</item>
+        <!-- Material support -->
+        <item name="colorPrimary">@color/system_accent_variant_dark</item>
+        <item name="colorPrimaryVariant">@color/system_accent_variant_dark</item>
+    </style>
+</resources>

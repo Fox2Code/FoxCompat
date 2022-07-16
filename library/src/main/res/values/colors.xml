@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black_transparent">#70000000</color>
+    <color name="white_transparent">#70FFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- It's a bit unsafe but it works -->
+    <color name="system_accent_light">@*android:color/accent_device_default_light</color>
+    <color name="system_accent_dark">@*android:color/accent_device_default_dark</color>
+    <color name="system_accent_variant_light">@*android:color/accent_device_default_dark</color>
+    <color name="system_accent_variant_dark">@*android:color/accent_device_default_light</color>
+
+    <!-- Well most of the time -->
+    <color name="accent_fallback_dark">#ff80cbc4</color>
+    <color name="accent_fallback_light">#ff008577</color>
+
+    <!-- OxygenOS Fallback -->
+    <color name="accent_oxygen_light">#ffc41442</color>
+    <color name="accent_oxygen_dark">#ffb1362f</color>
+</resources>
