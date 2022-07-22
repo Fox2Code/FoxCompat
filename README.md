@@ -12,7 +12,7 @@ You can check the [developer documentation](https://github.com/Fox2Code/FoxCompa
 
 - `androidx.appcompat:appcompat:1.4.2` (Forks are also supported)
 - [`dev.rikka.rikkax.layoutinflater:layoutinflater:1.2.0`](https://github.com/RikkaApps/RikkaX/tree/master/layoutinflater)
-- [`dev.rikka.rikkax.insets:insets:1.2.0`](https://github.com/RikkaApps/RikkaX/tree/master/insets)
+- [`dev.rikka.rikkax.insets:insets:1.3.0`](https://github.com/RikkaApps/RikkaX/tree/master/insets)
 
 Note: Optional libraries are imported automatically.
 
