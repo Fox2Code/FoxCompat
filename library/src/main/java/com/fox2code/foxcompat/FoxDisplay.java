@@ -2,11 +2,13 @@ package com.fox2code.foxcompat;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
 import androidx.annotation.Px;
 import androidx.core.graphics.ColorUtils;
@@ -16,6 +18,9 @@ import com.fox2code.foxcompat.internal.FoxCompat;
 import org.jetbrains.annotations.Contract;
 
 public final class FoxDisplay {
+    public static final @ColorInt int COLOR_TRANSPARENT = Color.TRANSPARENT;
+    public static final @ColorInt int COLOR_UNDEFINED = 0x00FFFFFF;
+
     @SuppressWarnings("deprecation")
     public static Display getDisplay(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
