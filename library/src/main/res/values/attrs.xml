@@ -5,8 +5,12 @@
         <attr name="activity" format="string" />
     </declare-styleable>
 
-    <!-- Note: Overrides populate these values by default -->
     <declare-styleable name="FoxCompatTheme">
+        <attr name="foxStyleHooks" format="string" />
+    </declare-styleable>
+
+    <!-- Note: Overrides populate these values by default -->
+    <declare-styleable name="FoxCompatThemeExt">
         <attr name="systemAccentLight" format="color" />
         <attr name="systemAccentVariantLight" format="color" />
         <attr name="systemAccentDark" format="color" />

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Strings for developers, don't need to be translated -->
     <string name="fox_compat_alert_title">FoxCompat Alert</string>
+    <string name="fox_compat_on_create_not_called">FoxApplication.onCreate() was not called during application creation.</string>
+    <string name="fox_compat_default_style_hooks">com.fox2code.foxcompat.FoxStyleHooks</string>
 </resources>

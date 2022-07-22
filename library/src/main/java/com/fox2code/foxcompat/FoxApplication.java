@@ -5,14 +5,12 @@ import android.app.Activity;
 import android.app.ActivityThread;
 import android.app.Application;
 import android.content.ComponentName;
-import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
@@ -22,7 +20,6 @@ import android.content.res.loader.ResourcesProvider;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 
@@ -45,6 +42,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 
 import dalvik.system.BaseDexClassLoader;
+import rikka.core.util.ResourceUtils;
 
 public class FoxApplication extends Application implements FoxActivity.ApplicationCallbacks {
     private static final String TAG = "FoxApplication";
@@ -70,6 +68,9 @@ public class FoxApplication extends Application implements FoxActivity.Applicati
     public void onCreate() {
         this.mOnCreateCalled = true;
         super.onCreate();
+        if (FoxCompat.rikkaXCore) {
+            ResourceUtils.setPackageName(this.getPackageName());
+        }
         if (this.mDelegate != null) {
             this.mDelegate.onCreate();
         }
@@ -152,6 +153,8 @@ public class FoxApplication extends Application implements FoxActivity.Applicati
         if (this.mFoxAlert != null) {
             this.mFoxAlert.show(foxActivity);
             this.mFoxAlert = null;
+        } else if (!this.mOnCreateCalled) {
+            FoxAlert.ON_CREATE_NOT_CALLED.show(foxActivity);
         }
     }
 

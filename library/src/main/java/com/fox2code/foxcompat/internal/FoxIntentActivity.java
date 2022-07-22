@@ -3,37 +3,19 @@ package com.fox2code.foxcompat.internal;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
-import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.OperationApplicationException;
 import android.content.ServiceConnection;
-import android.content.UriPermission;
-import android.content.pm.PackageManager;
-import android.database.ContentObserver;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CancellationSignal;
 import android.os.Process;
-import android.os.RemoteException;
-import android.os.UserHandle;
-import android.util.Size;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
 import androidx.annotation.RestrictTo;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.Executor;
 
 /**

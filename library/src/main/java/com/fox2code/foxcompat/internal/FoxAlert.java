@@ -14,7 +14,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public enum FoxAlert {
-    ;
+    ON_CREATE_NOT_CALLED(R.string.fox_compat_on_create_not_called);
 
     private final int message;
 

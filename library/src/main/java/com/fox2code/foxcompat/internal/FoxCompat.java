@@ -3,10 +3,10 @@ package com.fox2code.foxcompat.internal;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.HardwareRenderer;
 import android.os.Build;
 import android.os.SystemProperties;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.ThreadedRenderer;
 import android.widget.EdgeEffect;
@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import me.weishu.reflection.Reflection;
+import rikka.core.res.ResourcesCompatLayoutInflaterListener;
 import rikka.layoutinflater.view.LayoutInflaterFactory;
 
 /**
@@ -51,6 +52,7 @@ public final class FoxCompat {
     public static final boolean lineageOsSettings;
     public static final boolean lineageOsStyles;
     public static final boolean googleMaterial;
+    public static final boolean rikkaXCore;
     public static final boolean monetCompat;
     public static final boolean cardView;
     private static boolean hiddenApiBypass;
@@ -61,7 +63,7 @@ public final class FoxCompat {
     static {
         boolean samsungStatusBarManagerTmp, cyanogenModSettingsTmp,
                 lineageOsSettingsTmp, lineageOsSettingsBBTmp, lineageOsStylesTmp,
-                hiddenApiBypassTmp, freeReflectionTmp,
+                hiddenApiBypassTmp, freeReflectionTmp, rikkaXCoreTmp,
                 googleMaterialTmp, monetCompatTmp, cardViewTmp;
         try {
             Class.forName("android.app.SemStatusBarManager");
@@ -111,8 +113,13 @@ public final class FoxCompat {
             freeReflectionTmp = false;
         }
         try {
-            MaterialColors.isColorLight(0);
-            googleMaterialTmp = true;
+            rikkaXCoreTmp = ResourcesCompatLayoutInflaterListener.getInstance() != null;
+        } catch (Throwable ignored) {
+            rikkaXCoreTmp = false;
+        }
+        try {
+            googleMaterialTmp =
+                    MaterialColors.isColorLight(Color.WHITE);
         } catch (Throwable ignored) {
             googleMaterialTmp = false;
         }
@@ -135,6 +142,7 @@ public final class FoxCompat {
         lineageOsStyles = lineageOsStylesTmp;
         hiddenApiBypass = hiddenApiBypassTmp;
         freeReflection = freeReflectionTmp;
+        rikkaXCore = rikkaXCoreTmp;
         googleMaterial = googleMaterialTmp;
         monetCompat = monetCompatTmp;
         cardView = cardViewTmp;

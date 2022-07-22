@@ -11,8 +11,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -76,11 +74,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
+import rikka.core.res.ResourcesCompatLayoutInflaterListener;
 import rikka.insets.WindowInsetsHelper;
 import rikka.layoutinflater.view.LayoutInflaterFactory;
 
 public class FoxActivity extends FoxIntentActivity {
-    private static final ColorDrawable NULL_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
     private static final String EXTRA_FADE_OUT = "extra_fade_out";
     public static final String EXTRA_FOX_FINISH_ANIMATION = "extra_fox_finish_animation";
     static final Handler handler = new Handler(Looper.getMainLooper());
@@ -250,17 +248,8 @@ public class FoxActivity extends FoxIntentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (!this.mOnCreateCalledOnce) {
             this.getLayoutInflater().setFactory2(this.mLayoutInflaterFactory =
-                    (!(this instanceof Embeddable) ? this.createLayoutInflaterFactory() :
-                            new LayoutInflaterFactory(this.getDelegate()))
-                    .addOnViewCreatedListener(WindowInsetsHelper.Companion.getLISTENER())
-                            .addOnViewCreatedListener(FoxCompat.TOOLBAR_ALIGNMENT_FIX));
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && FoxCompat.cardView) {
-                this.mLayoutInflaterFactory.addOnViewCreatedListener(FoxCompat.CARD_VIEW_COLOR_FIX);
-            }
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && !BuildCompat.isAtLeastS()
-                    && FoxCompat.monetCompat) { // Add Overscroll effect with Monet library
-                this.mLayoutInflaterFactory.addOnViewCreatedListener(FoxCompat.STRETCH_OVERSCROLL);
-            }
+                    (this instanceof Embeddable ? this.createLayoutInflaterFactory0() :
+                            this.createLayoutInflaterFactory()));
             this.mHasHardwareNavBar = this.hasHardwareNavBar0();
             this.mDisplayCutoutHeight = FoxNotch.getNotchHeight(this);
             this.mCachedRotation = this.getRotation();
@@ -320,8 +309,27 @@ public class FoxActivity extends FoxIntentActivity {
         }
     }
 
+    final LayoutInflaterFactory createLayoutInflaterFactory0() {
+        LayoutInflaterFactory layoutInflaterFactory =
+                new LayoutInflaterFactory(this.getDelegate())
+                        .addOnViewCreatedListener(WindowInsetsHelper.Companion.getLISTENER())
+                        .addOnViewCreatedListener(FoxCompat.TOOLBAR_ALIGNMENT_FIX);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && FoxCompat.cardView) {
+            layoutInflaterFactory.addOnViewCreatedListener(FoxCompat.CARD_VIEW_COLOR_FIX);
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && FoxCompat.rikkaXCore) {
+            layoutInflaterFactory.addOnViewCreatedListener(
+                    ResourcesCompatLayoutInflaterListener.getInstance());
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && !BuildCompat.isAtLeastS()
+                && FoxCompat.monetCompat) { // Add Overscroll effect with Monet library
+            layoutInflaterFactory.addOnViewCreatedListener(FoxCompat.STRETCH_OVERSCROLL);
+        }
+        return layoutInflaterFactory;
+    }
+
     protected LayoutInflaterFactory createLayoutInflaterFactory() {
-        return new LayoutInflaterFactory(this.getDelegate());
+        return this.createLayoutInflaterFactory0();
     }
 
     @Override
@@ -615,7 +623,7 @@ public class FoxActivity extends FoxIntentActivity {
 
     public void setActionBarBackground(Drawable drawable) {
         if (this.mFoxActivityView != null) return;
-        if (drawable == null) drawable = NULL_DRAWABLE;
+        if (drawable == null) drawable = FoxViewCompat.NULL_DRAWABLE;
         this.mActionBarBackground = drawable;
         androidx.appcompat.app.ActionBar compatActionBar;
         try {
@@ -901,8 +909,8 @@ public class FoxActivity extends FoxIntentActivity {
         }
     }
 
-    public void setDrawerOpenable(Openable mDrawerOpenable) {
-        this.mDrawerOpenable = mDrawerOpenable;
+    public void setDrawerOpenable(Openable drawerOpenable) {
+        this.mDrawerOpenable = drawerOpenable;
     }
 
     @Override
