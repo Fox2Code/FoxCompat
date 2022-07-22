@@ -13,7 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class FoxViewCompat {
-    public static final ColorDrawable NULL_DRAWABLE = new ColorDrawable(Color.TRANSPARENT);
+    public static final ColorDrawable NULL_DRAWABLE = new ColorDrawable(Color.TRANSPARENT) {
+        @Override public void setColor(int color) {}
+    };
 
     public static ViewGroup.LayoutParams getLayoutParams(View view) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
