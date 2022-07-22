@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 public class FoxViewCompat {
     public static final ColorDrawable NULL_DRAWABLE = new ColorDrawable(Color.TRANSPARENT) {
         @Override public void setColor(int color) {
-            this.setColor(Color.TRANSPARENT);
+            super.setColor(Color.TRANSPARENT);
         }
     };
 
