@@ -9,7 +9,9 @@ import android.os.Build;
 import android.os.SystemProperties;
 import android.util.TypedValue;
 import android.view.ThreadedRenderer;
+import android.view.View;
 import android.widget.EdgeEffect;
+import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
@@ -265,22 +267,25 @@ public final class FoxCompat {
         } else if (view instanceof NestedScrollView) {
             ViewExtensions_ScrollViewKt.enableStretchOverscroll(
                     (NestedScrollView) view, null);
-        } else if (view instanceof ScrollView &&
-                checkReflection(context, Build.VERSION_CODES.P)) {
-            if (mEdgeGlowBottom == null) {
-                try {
-                    mEdgeGlowTop = ScrollView.class.getDeclaredField("mEdgeGlowTop");
-                    mEdgeGlowTop.setAccessible(true);
-                    mEdgeGlowBottom = ScrollView.class.getDeclaredField("mEdgeGlowBottom");
-                    mEdgeGlowBottom.setAccessible(true);
-                } catch (Exception e) {
-                    return;
+        } else if (checkReflection(context, Build.VERSION_CODES.P)) {
+            if (view instanceof ScrollView) {
+                if (mEdgeGlowBottom == null) {
+                    try {
+                        mEdgeGlowTop = ScrollView.class.getDeclaredField("mEdgeGlowTop");
+                        mEdgeGlowTop.setAccessible(true);
+                        mEdgeGlowBottom = ScrollView.class.getDeclaredField("mEdgeGlowBottom");
+                        mEdgeGlowBottom.setAccessible(true);
+                    } catch (Exception e) {
+                        return;
+                    }
                 }
+                setEdgeEffect(view, mEdgeGlowTop, new StretchEdgeEffect(
+                        context, view, StretchEdgeEffect.Direction.TOP));
+                setEdgeEffect(view, mEdgeGlowBottom, new StretchEdgeEffect(
+                        context, view, StretchEdgeEffect.Direction.BOTTOM));
+            } else if (view instanceof HorizontalScrollView) {
+                ((HorizontalScrollView) view).setOverScrollMode(View.OVER_SCROLL_NEVER);
             }
-            setEdgeEffect(view, mEdgeGlowTop, new StretchEdgeEffect(
-                    context, view, StretchEdgeEffect.Direction.TOP));
-            setEdgeEffect(view, mEdgeGlowBottom, new StretchEdgeEffect(
-                    context, view, StretchEdgeEffect.Direction.BOTTOM));
         }
     };
 
