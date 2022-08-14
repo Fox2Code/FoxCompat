@@ -1128,8 +1128,8 @@ public class FoxActivity extends FoxIntentActivity {
         if (mFoxActivityView != null) {
             if (mFoxActivityView.mViewModelProviderFactory == null) {
                 mFoxActivityView.mViewModelProviderFactory =
-                        new SavedStateViewModelFactory(getApplicationIntent(),
-                                this, getIntent() != null ? getIntent().getExtras() : null);
+                        new SavedStateViewModelFactory(getApplicationIntent(), mFoxActivityView,
+                                getIntent() != null ? getIntent().getExtras() : null);
             }
             return mFoxActivityView.mViewModelProviderFactory;
         }

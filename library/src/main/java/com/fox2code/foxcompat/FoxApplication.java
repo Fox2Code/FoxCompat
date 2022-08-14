@@ -18,6 +18,7 @@ import android.content.res.Resources;
 import android.content.res.loader.ResourcesLoader;
 import android.content.res.loader.ResourcesProvider;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.util.Log;
@@ -75,8 +76,9 @@ public class FoxApplication extends Application implements FoxActivity.Applicati
         if (mDelegate != null) {
             mDelegate.onCreate();
         }
-        boolean useHiddenApis = this.getApplicationInfo()
-                .metaData.getBoolean("useHiddenApis");
+        Bundle metaData = this.getApplicationInfo().metaData;
+        boolean useHiddenApis = metaData != null &&
+                metaData.getBoolean("useHiddenApis");
         if (useHiddenApis) {
             if (!FoxCompat.getHiddenApiStatus(this) &&
                     mFoxAlert == null) {

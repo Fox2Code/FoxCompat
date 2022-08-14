@@ -25,8 +25,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStore;
+import androidx.savedstate.SavedStateRegistry;
+import androidx.savedstate.SavedStateRegistryOwner;
 
 import com.fox2code.foxcompat.internal.FoxProcessExt;
 
@@ -36,7 +39,7 @@ import java.util.Objects;
 /**
  * View that allow to include a FoxActivity
  */
-public final class FoxActivityView extends FrameLayout {
+public final class FoxActivityView extends FrameLayout implements SavedStateRegistryOwner {
     private static final String CLASS_NAME1 =
             "com.fox2code.foxcompat.FoxActivityView";
     private static final String CLASS_NAME2 =
@@ -345,6 +348,22 @@ public final class FoxActivityView extends FrameLayout {
             fieldValue = "NO_ID";
         }
         return fieldValue;
+    }
+
+    @NonNull
+    @Override
+    public SavedStateRegistry getSavedStateRegistry() {
+        FragmentActivity fragmentActivity =
+                this.getParentFoxActivityInternal();
+        return fragmentActivity != null ?
+                fragmentActivity.getSavedStateRegistry() :
+                this.mFoxActivity.getSavedStateRegistry();
+    }
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return this.mFoxActivity.getLifecycle();
     }
 
     public static class SavedState extends BaseSavedState implements Parcelable {
