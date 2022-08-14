@@ -1,5 +1,6 @@
 package com.fox2code.foxcompat.internal;
 
+import android.app.ActivityThread;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.ContentProvider;
@@ -7,6 +8,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 import androidx.core.util.Consumer;
 
@@ -21,6 +23,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Observer;
 import java.util.Properties;
 
@@ -41,6 +44,7 @@ public final class FoxProcessExt {
     private static final Map<String, ContentProvider> contentProviders;
     private static final Consumer<ComponentName> onRedirectComponentName;
     private static final String realPackageName, wrappedPackageName;
+    private static Reference<Application> initialApplication;
 
     static {
         Properties properties = System.getProperties();
@@ -55,14 +59,26 @@ public final class FoxProcessExt {
         componentsRedirects = obtainMap("redirects");
         contentProviders = obtainMap("providers");
         onRedirectComponentName = getConsumer(ON_REDIRECTED);
-        realPackageName = String.valueOf(processExtMapTmp.get(REAL_PACKAGE_NAME));
-        wrappedPackageName = String.valueOf(processExtMapTmp.get(WRAPPED_PACKAGE_NAME));
+        realPackageName = stringIfy(processExtMapTmp.get(REAL_PACKAGE_NAME));
+        wrappedPackageName = stringIfy(processExtMapTmp.get(WRAPPED_PACKAGE_NAME));
         try {
             (attachBaseContext = ContextWrapper.class.getDeclaredMethod(
                     "attachBaseContext", Context.class)).setAccessible(true);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+        try {
+            initialApplication = new SoftReference<>(
+                    ActivityThread.currentApplication());
+        } catch (Throwable throwable) {
+            initialApplication = realPackageName != null ?
+                    applications.get(realPackageName) : null;
+        }
+    }
+
+    private static String stringIfy(Object o) {
+        if (o == null) return null;
+        return String.valueOf(o);
     }
 
     public static <K, V> Map<K, V> obtainMap(String key) {
@@ -145,6 +161,7 @@ public final class FoxProcessExt {
     public static void register(FoxApplication foxApplication) {
         applications.put(foxApplication.getPackageName(), new SoftReference<>(foxApplication));
         if (isRootLoader()) processExtMap.put(REAL_PACKAGE_NAME, foxApplication.getPackageName());
+        if (initialApplication == null) initialApplication = new WeakReference<>(foxApplication);
     }
 
     static Intent patchIntent(Intent intent) {
@@ -170,5 +187,18 @@ public final class FoxProcessExt {
 
     public static boolean isRootLoader() {
         return wrappedPackageName == null;
+    }
+
+    @NonNull
+    public static Application getInitialApplication() {
+        Application currentApplication = initialApplication == null ?
+                null : initialApplication.get();
+        if (currentApplication == null) {
+            currentApplication = ActivityThread.currentApplication();
+            if (isRootLoader()) {
+                initialApplication = new SoftReference<>(currentApplication);
+            }
+        }
+        return Objects.requireNonNull(currentApplication);
     }
 }

@@ -23,15 +23,15 @@ public class FoxThemeWrapper extends ContextThemeWrapper {
 
     public FoxThemeWrapper(Context base, @StyleRes int themeResId, boolean useDynamicColors) {
         super(base, themeResId);
-        this.mUseDynamicColors = useDynamicColors;
+        mUseDynamicColors = useDynamicColors;
     }
 
     public void setUseDynamicColors(boolean useDynamicColors) {
-        this.mUseDynamicColors = useDynamicColors;
+        mUseDynamicColors = useDynamicColors;
     }
 
     public boolean useDynamicColors() {
-        return this.mUseDynamicColors;
+        return mUseDynamicColors;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class FoxThemeWrapper extends ContextThemeWrapper {
         super.onApplyThemeResource(theme, resid, first);
         if (theme != null) {
             boolean isLightTheme = FoxDisplay.isLightTheme(theme);
-            boolean useDynamicColors = this.mUseDynamicColors &&
+            boolean useDynamicColors = mUseDynamicColors &&
                     FoxCompat.isDynamicAccentSupported(this);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && useDynamicColors) {
                 theme.applyStyle(isLightTheme ?

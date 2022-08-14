@@ -32,53 +32,53 @@ public final class FoxLineage {
         if (context.getPackageManager().hasSystemFeature(
                 LineageContextConstants.Features.SETTINGS)
                 && FoxCompat.lineageOsSettings) {
-            this.mSettings = new Settings(context.getContentResolver());
+            mSettings = new Settings(context.getContentResolver());
             lineageSettings = true;
         } else if (FoxCompat.cyanogenModSettings) {
-            this.mSettings = new SettingsCyanogenMod(
+            mSettings = new SettingsCyanogenMod(
                     context.getContentResolver());
-        } else this.mSettings = null;
+        } else mSettings = null;
         if (context.getPackageManager().hasSystemFeature(
                 LineageContextConstants.Features.STYLES)
                 && FoxCompat.lineageOsStyles) {
-            this.mStyles = new ServiceStyles(StyleInterface.getInstance(context));
+            mStyles = new ServiceStyles(StyleInterface.getInstance(context));
         } else if (lineageSettings && FoxCompat.lineageOsSettingsBB) {
-            this.mStyles = new SettingsStyles(context.getContentResolver());
-        } else this.mStyles = null;
+            mStyles = new SettingsStyles(context.getContentResolver());
+        } else mStyles = null;
     }
 
     public boolean isForceNavBar() {
-        return this.mSettings != null && this.mSettings.isForceNavBar();
+        return mSettings != null && mSettings.isForceNavBar();
     }
 
     public boolean isBlackMode() {
-        return this.mStyles != null && this.mStyles.isBlackMode();
+        return mStyles != null && mStyles.isBlackMode();
     }
 
     public boolean hasLineageStyles() {
-        return this.mStyles != null;
+        return mStyles != null;
     }
 
     public boolean isLineageOS() {
-        return (!(this.mSettings instanceof SettingsCyanogenMod)) &&
-                this.mStyles != null || this.mSettings != null;
+        return (!(mSettings instanceof SettingsCyanogenMod)) &&
+                mStyles != null || mSettings != null;
     }
 
     public boolean isCyanogenMod() {
-        return this.mSettings instanceof SettingsCyanogenMod;
+        return mSettings instanceof SettingsCyanogenMod;
     }
 
     @Nullable
     public String getDataUsageIntent() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return android.provider.Settings.ACTION_DATA_USAGE_SETTINGS;
-        } else if (this.mSettings != null) {
-            return this.mSettings.getDataUsageIntent();
+        } else if (mSettings != null) {
+            return mSettings.getDataUsageIntent();
         } else return null;
     }
 
     public void fixConfiguration(Configuration configuration) {
-        if (this.mStyles != null && this.mStyles.isDarkNow()) {
+        if (mStyles != null && mStyles.isDarkNow()) {
             int uiMode = configuration.uiMode;
             uiMode &= ~Configuration.UI_MODE_NIGHT_MASK;
             uiMode |= Configuration.UI_MODE_NIGHT_YES;
@@ -93,10 +93,10 @@ public final class FoxLineage {
      * as {@link RomType#CYANOGENMOD} or {@link RomType#LINEAGEOS}
      * */
     public RomType getRomType() {
-        if (this.mSettings != null) {
-            return this.mSettings instanceof SettingsCyanogenMod ?
+        if (mSettings != null) {
+            return mSettings instanceof SettingsCyanogenMod ?
                     RomType.CYANOGENMOD : RomType.LINEAGEOS;
-        } else if (this.mStyles != null) {
+        } else if (mStyles != null) {
             return RomType.LINEAGEOS;
         } else if (FoxCompat.isAndroidSDK()) {
             return RomType.SDK;

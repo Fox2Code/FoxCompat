@@ -20,6 +20,7 @@ import android.content.res.loader.ResourcesProvider;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 
@@ -66,50 +67,58 @@ public class FoxApplication extends Application implements FoxActivity.Applicati
 
     @Override
     public void onCreate() {
-        this.mOnCreateCalled = true;
+        mOnCreateCalled = true;
         super.onCreate();
         if (FoxCompat.rikkaXCore) {
             ResourceUtils.setPackageName(this.getPackageName());
         }
-        if (this.mDelegate != null) {
-            this.mDelegate.onCreate();
+        if (mDelegate != null) {
+            mDelegate.onCreate();
+        }
+        boolean useHiddenApis = this.getApplicationInfo()
+                .metaData.getBoolean("useHiddenApis");
+        if (useHiddenApis) {
+            if (!FoxCompat.getHiddenApiStatus(this) &&
+                    mFoxAlert == null) {
+                mFoxAlert = FoxAlert.HIDDEN_APIS_FAIL;
+            }
         }
     }
 
     @Override
     public void onTerminate() {
         super.onTerminate();
-        if (this.mDelegate != null) {
-            this.mDelegate.onTerminate();
+        if (mDelegate != null) {
+            mDelegate.onTerminate();
         }
     }
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (this.mDelegate != null) {
-            this.mDelegate.onConfigurationChanged(newConfig);
+        if (mDelegate != null) {
+            mDelegate.onConfigurationChanged(newConfig);
         }
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        if (this.mDelegate != null) {
-            this.mDelegate.onLowMemory();
+        if (mDelegate != null) {
+            mDelegate.onLowMemory();
         }
     }
 
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        if (this.mDelegate != null) {
-            this.mDelegate.onTrimMemory(level);
+        if (mDelegate != null) {
+            mDelegate.onTrimMemory(level);
         }
     }
 
     public void setDelegate(Application delegate) {
-        this.mDelegate = delegate;
+        mDelegate = delegate;
     }
 
     @Override
@@ -149,11 +158,11 @@ public class FoxApplication extends Application implements FoxActivity.Applicati
     @Override
     @CallSuper
     public void onCreateFoxActivity(FoxActivity foxActivity) {
-        this.mLastCompatActivity = foxActivity.mSelfReference;
-        if (this.mFoxAlert != null) {
-            this.mFoxAlert.show(foxActivity);
-            this.mFoxAlert = null;
-        } else if (!this.mOnCreateCalled) {
+        mLastCompatActivity = foxActivity.mSelfReference;
+        if (mFoxAlert != null) {
+            mFoxAlert.show(foxActivity);
+            mFoxAlert = null;
+        } else if (!mOnCreateCalled) {
             FoxAlert.ON_CREATE_NOT_CALLED.show(foxActivity);
         }
     }
@@ -166,14 +175,14 @@ public class FoxApplication extends Application implements FoxActivity.Applicati
     @CallSuper
     public void onRefreshUI(FoxActivity foxActivity) {
         if (!foxActivity.isEmbedded()) {
-            this.mLastCompatActivity = foxActivity.mSelfReference;
+            mLastCompatActivity = foxActivity.mSelfReference;
         }
     }
 
     @Nullable
     public FoxActivity getLastCompatActivity() {
-        return this.mLastCompatActivity == null ?
-                null : this.mLastCompatActivity.get();
+        return mLastCompatActivity == null ?
+                null : mLastCompatActivity.get();
     }
 
     public boolean hasHiddenApis() {
@@ -184,12 +193,26 @@ public class FoxApplication extends Application implements FoxActivity.Applicati
         return FoxLineage.getFoxLineage(this);
     }
 
+    /**
+     * Returns the name of the current process. A package's default process name
+     * is the same as its package name. Non-default processes will look like
+     * "$PACKAGE_NAME:$NAME", where $NAME corresponds to an android:process
+     * attribute within AndroidManifest.xml.
+     */
     public static String getProcessName() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return Application.getProcessName();
         } else {
             return ActivityThread.currentProcessName();
         }
+    }
+
+    /**
+     * @return the first Application object made in the process.
+     */
+    @NonNull
+    public static Application getInitialApplication() {
+        return FoxProcessExt.getInitialApplication();
     }
 
     @Deprecated // Will be put in a separate library later

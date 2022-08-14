@@ -8,4 +8,8 @@ public class ActivityThread {
             return Application.getProcessName();
         } else return System.getProperty("currentProcessName");
     }
+
+    public static Application currentApplication() {
+        return null;
+    }
 }

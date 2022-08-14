@@ -1,6 +1,11 @@
 package com.fox2code.foxcompat;
 
+import android.content.res.ColorStateList;
+import android.graphics.BlendMode;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -13,11 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class FoxViewCompat {
-    public static final ColorDrawable NULL_DRAWABLE = new ColorDrawable(Color.TRANSPARENT) {
-        @Override public void setColor(int color) {
-            super.setColor(Color.TRANSPARENT);
-        }
-    };
+    public static final ColorDrawable NULL_DRAWABLE = new NullDrawable();
 
     public static ViewGroup.LayoutParams getLayoutParams(View view) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
@@ -160,6 +161,55 @@ public class FoxViewCompat {
             super(layoutParams.width, layoutParams.height);
             this.background = background;
         }
+    }
+
+    public static final class NullDrawable extends ColorDrawable {
+        public NullDrawable() {
+            super(Color.TRANSPARENT);
+            super.setBounds(0, 0, 0, 0);
+            super.setAlpha(0);
+        }
+
+        @Override
+        public void setColor(int color) {
+            super.setColor(Color.TRANSPARENT);
+        }
+
+        @Override
+        public void draw(@NonNull Canvas canvas) {}
+
+        @Override
+        public void setAlpha(int alpha) {}
+
+        @Override
+        public void setColorFilter(@Nullable ColorFilter colorFilter) {}
+
+        @Override
+        public void setColorFilter(int color, @NonNull PorterDuff.Mode mode) {}
+
+        @Override
+        public void setTintList(ColorStateList tint) {}
+
+        @Override
+        public void setTintMode(@Nullable PorterDuff.Mode tintMode) {}
+
+        @Override
+        public void setTintBlendMode(@NonNull BlendMode blendMode) {}
+
+        @Override
+        public void setTint(int tintColor) {}
+
+        @Override
+        public void setHotspot(float x, float y) {}
+
+        @Override
+        public void setHotspotBounds(int left, int top, int right, int bottom) {}
+
+        @Override
+        public void setBounds(@NonNull Rect bounds) {}
+
+        @Override
+        public void setBounds(int left, int top, int right, int bottom) {}
     }
 
     @NonNull

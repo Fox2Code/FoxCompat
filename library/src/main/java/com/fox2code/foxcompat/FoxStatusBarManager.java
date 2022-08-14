@@ -62,26 +62,26 @@ public final class FoxStatusBarManager {
 
     @SuppressLint("WrongConstant")
     FoxStatusBarManager(Context context) {
-        this.mContext = context;
+        mContext = context;
         if (FoxCompat.samsungStatusBarManager) {
-            this.mSemStatusBarManager = context.getSystemService("sem_statusbar");
-        } else this.mSemStatusBarManager = null;
-        this.mStatusBarManager = context.getSystemService("statusbar");
+            mSemStatusBarManager = context.getSystemService("sem_statusbar");
+        } else mSemStatusBarManager = null;
+        mStatusBarManager = context.getSystemService("statusbar");
     }
 
     @RequiresPermission(anyOf = {permission.EXPAND_STATUS_BAR})
     public void expandNotificationsPanel() {
-        if (this.mSemStatusBarManager != null) {
+        if (mSemStatusBarManager != null) {
             try {
-                ((SemStatusBarManager) this.mSemStatusBarManager).expandNotificationsPanel();
+                ((SemStatusBarManager) mSemStatusBarManager).expandNotificationsPanel();
                 return; // If SemStatusBarManager is successful, don't try system impl
             } catch (RuntimeException e) {
                 throw e;
             } catch (Throwable ignored) {}
         }
-        if (this.mStatusBarManager != null && sExpandNotificationsPanel != null) {
+        if (mStatusBarManager != null && sExpandNotificationsPanel != null) {
             try {
-                sExpandNotificationsPanel.invoke(this.mStatusBarManager);
+                sExpandNotificationsPanel.invoke(mStatusBarManager);
             } catch (InvocationTargetException invocationTargetException) {
                 Throwable cause = invocationTargetException.getTargetException();
                 if (cause instanceof RuntimeException) throw (RuntimeException) cause;
@@ -91,17 +91,17 @@ public final class FoxStatusBarManager {
 
     @RequiresPermission(anyOf = {permission.EXPAND_STATUS_BAR})
     public void expandSettingsPanel() {
-        if (this.mSemStatusBarManager != null) {
+        if (mSemStatusBarManager != null) {
             try {
-                ((SemStatusBarManager) this.mSemStatusBarManager).expandQuickSettingsPanel();
+                ((SemStatusBarManager) mSemStatusBarManager).expandQuickSettingsPanel();
                 return; // If SemStatusBarManager is successful, don't try system impl
             } catch (RuntimeException e) {
                 throw e;
             } catch (Throwable ignored) {}
         }
-        if (this.mStatusBarManager != null && sExpandSettingsPanel != null) {
+        if (mStatusBarManager != null && sExpandSettingsPanel != null) {
             try {
-                sExpandSettingsPanel.invoke(this.mStatusBarManager);
+                sExpandSettingsPanel.invoke(mStatusBarManager);
             } catch (InvocationTargetException invocationTargetException) {
                 Throwable cause = invocationTargetException.getTargetException();
                 if (cause instanceof RuntimeException) throw (RuntimeException) cause;
@@ -112,24 +112,24 @@ public final class FoxStatusBarManager {
     @RequiresPermission(allOf = {permission.BROADCAST_CLOSE_SYSTEM_DIALOGS, permission.EXPAND_STATUS_BAR})
     public void collapsePanels() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            if (this.mSemStatusBarManager != null) {
+            if (mSemStatusBarManager != null) {
                 try {
-                    ((SemStatusBarManager) this.mSemStatusBarManager).collapsePanels();
+                    ((SemStatusBarManager) mSemStatusBarManager).collapsePanels();
                     return; // If SemStatusBarManager is successful, don't try system impl
                 } catch (RuntimeException e) {
                     throw e;
                 } catch (Throwable ignored) {}
             }
-            if (this.mStatusBarManager != null && sCollapsePanels != null) {
+            if (mStatusBarManager != null && sCollapsePanels != null) {
                 try {
-                    sCollapsePanels.invoke(this.mStatusBarManager); return;
+                    sCollapsePanels.invoke(mStatusBarManager); return;
                 } catch (InvocationTargetException invocationTargetException) {
                     Throwable cause = invocationTargetException.getTargetException();
                     if (cause instanceof RuntimeException) throw (RuntimeException) cause;
                 } catch (Throwable ignored) {}
             }
         }
-        this.mContext.sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+        mContext.sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
                 // This is to restrict the intent to system processes only
                 .setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY), permission.STATUS_BAR);
     }

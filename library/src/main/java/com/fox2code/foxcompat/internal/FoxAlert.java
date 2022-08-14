@@ -14,12 +14,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public enum FoxAlert {
-    ON_CREATE_NOT_CALLED(R.string.fox_compat_on_create_not_called);
+    ON_CREATE_NOT_CALLED(R.string.fox_compat_on_create_not_called),
+    HIDDEN_APIS_FAIL(R.string.fox_compat_no_hidden_apis);
 
-    private final int message;
+    private final int mMessage;
 
     FoxAlert(@StringRes int message) {
-        this.message = message;
+        mMessage = message;
     }
 
     public void show(Activity activity) {
@@ -30,7 +31,7 @@ public enum FoxAlert {
         } else {
             builder = new AlertDialog.Builder(activity);
         }
-        builder.setTitle(R.string.fox_compat_alert_title).setMessage(this.message)
+        builder.setTitle(R.string.fox_compat_alert_title).setMessage(mMessage)
                 .setCancelable(true).setPositiveButton(android.R.string.ok, (d, w) -> {}).show();
     }
 }

@@ -60,31 +60,31 @@ public final class FoxActivityView extends FrameLayout {
 
     public FoxActivityView(@NonNull Context context) {
         super(context);
-        this.mRealFrameLayout = this;
-        this.mApplicationContext = null;
+        mRealFrameLayout = this;
+        mApplicationContext = null;
         this.init(null, 0, null);
     }
 
     public FoxActivityView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        this.mRealFrameLayout = this;
-        this.mApplicationContext = null;
+        mRealFrameLayout = this;
+        mApplicationContext = null;
         this.init(attrs, 0, null);
     }
 
     public FoxActivityView(@NonNull Context context, @Nullable AttributeSet attrs,
                            int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.mRealFrameLayout = this;
-        this.mApplicationContext = null;
+        mRealFrameLayout = this;
+        mApplicationContext = null;
         this.init(attrs, defStyleAttr, null);
     }
 
     public FoxActivityView(@NonNull Context context, @Nullable AttributeSet attrs,
                            int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        this.mRealFrameLayout = this;
-        this.mApplicationContext = null;
+        mRealFrameLayout = this;
+        mApplicationContext = null;
         this.init(attrs, defStyleAttr, null);
     }
 
@@ -93,9 +93,9 @@ public final class FoxActivityView extends FrameLayout {
     @Keep @RestrictTo(RestrictTo.Scope.LIBRARY)
     public FoxActivityView(@NonNull Context context,@NonNull Context applicationContext,
                            @Nullable FrameLayout realFrameLayout, @Nullable String activity) {
-        super(context); this.mExternal = true;
-        this.mRealFrameLayout = realFrameLayout == null ? this : realFrameLayout;
-        this.mApplicationContext = Objects.requireNonNull(applicationContext);
+        super(context); mExternal = true;
+        mRealFrameLayout = realFrameLayout == null ? this : realFrameLayout;
+        mApplicationContext = Objects.requireNonNull(applicationContext);
         this.init(null, 0, activity);
         if (FoxProcessExt.getApplication(applicationContext.getPackageName()) == null
                 && applicationContext instanceof Application) {
@@ -107,19 +107,19 @@ public final class FoxActivityView extends FrameLayout {
     private FoxActivityView(@NonNull Context context,@Nullable
             Application application, @Nullable String activity) {
         super(context);
-        this.mRealFrameLayout = this;
-        this.mApplicationContext = application;
+        mRealFrameLayout = this;
+        mApplicationContext = application;
         this.init(null, 0, activity);
     }
 
     private void init(AttributeSet attrs, int defStyleAttr, String activity) {
         FragmentActivity parent = this.getParentFoxActivityInternal();
         if (parent != null) {
-            this.mFragmentManager = parent.getSupportFragmentManager();
-            this.mViewModelStore = parent.getViewModelStore();
-            this.mExternal = this.mFragmentManager == null;
-        } else this.mExternal = true;
-        if (activity == null && this.mRealFrameLayout == this) {
+            mFragmentManager = parent.getSupportFragmentManager();
+            mViewModelStore = parent.getViewModelStore();
+            mExternal = mFragmentManager == null;
+        } else mExternal = true;
+        if (activity == null && mRealFrameLayout == this) {
             TypedArray a = getContext().obtainStyledAttributes(
                     attrs, R.styleable.FoxActivityView, defStyleAttr, 0);
             activity = a.getString(R.styleable.FoxActivityView_activity);
@@ -130,10 +130,10 @@ public final class FoxActivityView extends FrameLayout {
             if (activity.startsWith(packageName + "/")) {
                 activity = activity.substring(packageName.length() + 1);
             }
-            this.mLoadActivity = activity;
+            mLoadActivity = activity;
             FoxActivity.handler.post(() -> {
-                String activityFinal = this.mLoadActivity;
-                this.mLoadActivity = null;
+                String activityFinal = mLoadActivity;
+                mLoadActivity = null;
                 try {
                     this.setActivity(activityFinal.isEmpty() ? null : activityFinal);
                 } catch (Exception e) {
@@ -146,49 +146,49 @@ public final class FoxActivityView extends FrameLayout {
     public void setActivity(String activity) throws ReflectiveOperationException {
         if (Looper.myLooper() != Looper.getMainLooper())
             throw new IllegalStateException("Must be called from main thread");
-        if (this.mLoadActivity != null) {
-            this.mLoadActivity = activity == null ? "" : activity;
+        if (mLoadActivity != null) {
+            mLoadActivity = activity == null ? "" : activity;
             return;
         }
         if (activity == null) {
-            FoxActivity oldFoxActivity = this.mFoxActivity;
+            FoxActivity oldFoxActivity = mFoxActivity;
             if (oldFoxActivity != null) {
                 oldFoxActivity.onDestroy();
             }
-            this.mFoxActivity = null;
-            this.mRealFrameLayout.removeAllViews();
-            this.mViewModelProviderFactory = null;
+            mFoxActivity = null;
+            mRealFrameLayout.removeAllViews();
+            mViewModelProviderFactory = null;
             return;
         }
         this.ensureInitialized();
         Class<? extends FoxActivity> activityClass = Class.forName(activity)
                 .asSubclass(FoxActivity.Embeddable.class).asSubclass(FoxActivity.class);
-        if (this.mExternal) { // Extra check needed to externally embeddable
+        if (mExternal) { // Extra check needed to externally embeddable
             activityClass.asSubclass(FoxActivity.ExternallyEmbeddable.class);
         }
         FoxActivity newFoxActivity = activityClass.newInstance();
-        FoxActivity oldFoxActivity = this.mFoxActivity;
+        FoxActivity oldFoxActivity = mFoxActivity;
         if (oldFoxActivity != null) {
             oldFoxActivity.onDestroy();
         }
-        this.mFoxActivity = null;
-        this.mRealFrameLayout.removeAllViews();
-        this.mViewModelProviderFactory = null;
+        mFoxActivity = null;
+        mRealFrameLayout.removeAllViews();
+        mViewModelProviderFactory = null;
         newFoxActivity.attachFoxActivityView(this);
-        this.mFoxActivity = newFoxActivity;
+        mFoxActivity = newFoxActivity;
         try {
-            newFoxActivity.onCreate(this.mSavedInstanceState);
+            newFoxActivity.onCreate(mSavedInstanceState);
         } finally {
-            this.mSavedInstanceState = null;
+            mSavedInstanceState = null;
         }
-        if (this.mPaused) {
+        if (mPaused) {
             newFoxActivity.onPause();
         }
     }
 
     @NonNull
     public Activity getParentFoxActivity() {
-        Context context = this.mRealFrameLayout.getContext();
+        Context context = mRealFrameLayout.getContext();
         while (!(context instanceof FragmentActivity)) {
             if (context instanceof ContextWrapper) {
                 context = ((ContextWrapper) context).getBaseContext();
@@ -199,7 +199,7 @@ public final class FoxActivityView extends FrameLayout {
 
     @Nullable
     FragmentActivity getParentFoxActivityInternal() {
-        Context context = this.mRealFrameLayout.getContext();
+        Context context = mRealFrameLayout.getContext();
         while (!(context instanceof FragmentActivity)) {
             if (context instanceof ContextWrapper) {
                 context = ((ContextWrapper) context).getBaseContext();
@@ -210,22 +210,22 @@ public final class FoxActivityView extends FrameLayout {
 
     @Nullable
     public FoxActivity getChildFoxActivity() {
-        return this.mFoxActivity;
+        return mFoxActivity;
     }
 
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-        if (this.mRealFrameLayout == this)
+        if (mRealFrameLayout == this)
             super.onVisibilityChanged(changedView, visibility);
         boolean paused = visibility != VISIBLE;
-        if (this.mFoxActivity != null && this.mPaused != paused) {
+        if (mFoxActivity != null && mPaused != paused) {
             if (paused) {
-                this.mFoxActivity.onPause();
+                mFoxActivity.onPause();
             } else {
-                this.mFoxActivity.onResume();
+                mFoxActivity.onResume();
             }
         }
-        this.mPaused = paused;
+        mPaused = paused;
     }
 
     @Override
@@ -233,33 +233,33 @@ public final class FoxActivityView extends FrameLayout {
         try {
             this.setActivity(null);
         } catch (ReflectiveOperationException ignored) {}
-        if (this.mRealFrameLayout == this)
+        if (mRealFrameLayout == this)
             super.onDetachedFromWindow();
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (this.mFoxActivity != null &&
-                this.mFoxActivity.dispatchKeyEvent(event))
+        if (mFoxActivity != null &&
+                mFoxActivity.dispatchKeyEvent(event))
             return true;
-        return this.mRealFrameLayout == this && super.dispatchKeyEvent(event);
+        return mRealFrameLayout == this && super.dispatchKeyEvent(event);
     }
 
     void ensureInitialized() {
-        if (this.mViewModelStore == null) {
+        if (mViewModelStore == null) {
             FragmentActivity parent = this.getParentFoxActivityInternal();
             if (parent != null) {
-                this.mFragmentManager = parent.getSupportFragmentManager();
-                this.mViewModelStore = parent.getViewModelStore();
-                this.mExternal = this.mFragmentManager == null;
+                mFragmentManager = parent.getSupportFragmentManager();
+                mViewModelStore = parent.getViewModelStore();
+                mExternal = mFragmentManager == null;
             } else {
                 Activity activity = this.getParentFoxActivity();
                 if (activity instanceof ComponentActivity) {
-                    this.mViewModelStore = ((ComponentActivity)
+                    mViewModelStore = ((ComponentActivity)
                             activity).getViewModelStore();
                 } else {
-                    this.mViewModelStore = new ViewModelStore();
-                    this.mExternal = true;
+                    mViewModelStore = new ViewModelStore();
+                    mExternal = true;
                 }
             }
         }
@@ -268,44 +268,44 @@ public final class FoxActivityView extends FrameLayout {
     public void recreate() {
         if (Looper.myLooper() != Looper.getMainLooper())
             throw new IllegalStateException("Must be called from main thread");
-        if (this.mFoxActivity == null) return;
+        if (mFoxActivity == null) return;
         Bundle savedInstance = new Bundle();
-        this.mFoxActivity.onSaveInstanceState(savedInstance);
-        this.mSavedInstanceState = savedInstance;
+        mFoxActivity.onSaveInstanceState(savedInstance);
+        mSavedInstanceState = savedInstance;
         try {
-            this.setActivity(this.mFoxActivity.getClass().getName());
+            this.setActivity(mFoxActivity.getClass().getName());
         } catch (ReflectiveOperationException e) {
             Log.e(TAG, "Failed to recreate activity!", e);
         }
     }
 
     public boolean clickMenu() {
-        FoxActivity foxActivity = this.mFoxActivity;
+        FoxActivity foxActivity = mFoxActivity;
         return foxActivity != null && foxActivity.clickMenu();
     }
 
     public boolean isExternal() {
-        return this.mExternal;
+        return mExternal;
     }
 
     Context getApplicationContext() {
-        return this.mApplicationContext;
+        return mApplicationContext;
     }
 
     @Override
     protected Parcelable onSaveInstanceState() {
         SavedState savedState =
                 new SavedState(super.onSaveInstanceState());
-        if (this.mFoxActivity != null) {
+        if (mFoxActivity != null) {
             Bundle savedInstanceState = new Bundle();
             try {
-                this.mFoxActivity.onSaveInstanceState(savedInstanceState);
+                mFoxActivity.onSaveInstanceState(savedInstanceState);
             } catch (Exception e) {
                 Log.e(TAG, "Failed to save instance state!");
             }
             savedState.mSavedInstanceState = savedInstanceState;
-            savedState.mActivity = this.mFoxActivity.getClass().getName();
-            savedState.mViewModelStore = this.mViewModelStore;
+            savedState.mActivity = mFoxActivity.getClass().getName();
+            savedState.mViewModelStore = mViewModelStore;
         }
         return savedState;
     }
@@ -315,8 +315,8 @@ public final class FoxActivityView extends FrameLayout {
         super.onRestoreInstanceState(state);
         if (state instanceof SavedState) {
             if (((SavedState) state).mViewModelStore != null)
-                this.mViewModelStore = ((SavedState) state).mViewModelStore;
-            this.mSavedInstanceState = ((SavedState) state).mSavedInstanceState;
+                mViewModelStore = ((SavedState) state).mViewModelStore;
+            mSavedInstanceState = ((SavedState) state).mSavedInstanceState;
             try {
                 this.setActivity(((SavedState) state).mActivity);
             } catch (ReflectiveOperationException e) {
@@ -367,9 +367,9 @@ public final class FoxActivityView extends FrameLayout {
 
         public SavedState(Parcel source) {
             super(source);
-            this.mActivity = source.readString();
-            if (this.mActivity != null) {
-                this.mSavedInstanceState = source.readBundle(
+            mActivity = source.readString();
+            if (mActivity != null) {
+                mSavedInstanceState = source.readBundle(
                         SavedState.class.getClassLoader());
             }
         }
@@ -377,8 +377,8 @@ public final class FoxActivityView extends FrameLayout {
         public SavedState(Parcelable superState) {
             super(superState);
             if (superState instanceof SavedState) {
-                this.mActivity = ((SavedState) superState).mActivity;
-                this.mSavedInstanceState =
+                mActivity = ((SavedState) superState).mActivity;
+                mSavedInstanceState =
                         ((SavedState) superState).mSavedInstanceState;
             }
         }
@@ -386,9 +386,9 @@ public final class FoxActivityView extends FrameLayout {
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeString(this.mActivity);
-            if (this.mActivity != null)
-                out.writeBundle(this.mSavedInstanceState);
+            out.writeString(mActivity);
+            if (mActivity != null)
+                out.writeBundle(mSavedInstanceState);
         }
     }
 
