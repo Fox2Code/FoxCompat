@@ -231,7 +231,9 @@ public final class FoxCompat {
         }
         if (freeReflection) {
             freeReflection = false;
-            Reflection.unseal(context);
+            try {
+                Reflection.unseal(context);
+            } catch (Throwable ignored) {}
             return hiddenApis = hasHiddenAPI0();
         }
         return false;

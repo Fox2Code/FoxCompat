@@ -65,7 +65,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStore;
-import androidx.savedstate.SavedStateRegistryOwner;
 
 import com.fox2code.foxcompat.internal.FoxCompat;
 import com.fox2code.foxcompat.internal.FoxNotch;

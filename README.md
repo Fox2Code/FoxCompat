@@ -11,10 +11,11 @@ You can check the [developer documentation](https://github.com/Fox2Code/FoxCompa
 ### Required libraries
 
 - `androidx.appcompat:appcompat:1.5.0` (Forks are also supported)
+- `androidx.customview:customview:1.1.0` (Forks are also supported)
 - [`dev.rikka.rikkax.layoutinflater:layoutinflater:1.2.0`](https://github.com/RikkaApps/RikkaX/tree/master/layoutinflater)
 - [`dev.rikka.rikkax.insets:insets:1.3.0`](https://github.com/RikkaApps/RikkaX/tree/master/insets)
 
-Note: Optional libraries are imported automatically.
+Note: Required libraries are imported automatically.
 
 ### Optional libraries
 
@@ -61,6 +62,6 @@ repositories {
 
 // Add to existing dependencies block
 dependencies {
-    implementation 'com.github.Fox2Code:FoxCompat:0.0.3'
+    implementation 'com.github.Fox2Code:FoxCompat:0.1.1'
 }
 ```
