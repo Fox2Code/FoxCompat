@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.Fox2Code'
-version = '0.1.0'
+version = '0.1.1'
 
 android {
     namespace 'com.fox2code.foxcompat'

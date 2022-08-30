@@ -3,6 +3,7 @@ package com.fox2code.foxcompat.internal;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.IAppTask;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Process;
 import android.util.Log;
@@ -27,9 +28,9 @@ public class AppTaskUtil {
     private static final Field sAppTaskWrapper;
 
     static {
-        FoxCompat.tryUnlockHiddenApisInternal();
-        Constructor<ActivityManager.AppTask> sAppTaskUnWrapperTmp;
-        try {
+        boolean shouldTry = FoxCompat.checkReflectionInternal(Build.VERSION_CODES.TIRAMISU);
+        Constructor<ActivityManager.AppTask> sAppTaskUnWrapperTmp = null;
+        if (shouldTry) try {
             sAppTaskUnWrapperTmp = ActivityManager.
                     AppTask.class.getConstructor(IAppTask.class);
             sAppTaskUnWrapperTmp.setAccessible(true);
@@ -37,8 +38,8 @@ public class AppTaskUtil {
             sAppTaskUnWrapperTmp = null;
         }
         sAppTaskUnWrapper = sAppTaskUnWrapperTmp;
-        Field sAppTaskWrapperTmp;
-        try {
+        Field sAppTaskWrapperTmp = null;
+        if (shouldTry) try {
             sAppTaskWrapperTmp = ActivityManager.
                     AppTask.class.getDeclaredField("mAppTaskImpl");
             sAppTaskWrapperTmp.setAccessible(true);

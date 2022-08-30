@@ -132,7 +132,7 @@ public class FoxActivity extends FoxIntentActivity {
         if (foxActivityView.mFoxActivity != null)
             throw new IllegalStateException("FoxActivityView already bound");
         Context applicationContext = foxActivityView.getApplicationContext();
-        super.attachBaseContext(applicationContext == null ?
+        super.attachBaseContextReal(applicationContext == null ?
                 new ContextWrapper(foxActivityView.getContext()) {
             public void setContentCaptureOptions(ContentCaptureOptions contentCaptureOptions) {}
 
@@ -1082,7 +1082,7 @@ public class FoxActivity extends FoxIntentActivity {
     }
 
     @Override
-    public Intent patchIntent(Intent intent) {
+    protected Intent patchIntent(Intent intent) {
         Application application = this.getApplicationIntent();
         if (application instanceof ApplicationCallbacks) {
             intent = ((ApplicationCallbacks) application)
@@ -1127,7 +1127,7 @@ public class FoxActivity extends FoxIntentActivity {
     public ViewModelProvider.Factory getDefaultViewModelProviderFactory() {
         if (mFoxActivityView != null) {
             if (mFoxActivityView.mViewModelProviderFactory == null) {
-                mFoxActivityView.mViewModelProviderFactory =
+                mFoxActivityView.mViewModelProviderFactory = (ViewModelProvider.Factory)
                         new SavedStateViewModelFactory(getApplicationIntent(), mFoxActivityView,
                                 getIntent() != null ? getIntent().getExtras() : null);
             }

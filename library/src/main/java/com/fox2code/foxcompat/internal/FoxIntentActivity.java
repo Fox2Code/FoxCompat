@@ -3,6 +3,7 @@ package com.fox2code.foxcompat.internal;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
@@ -25,6 +26,18 @@ import java.util.concurrent.Executor;
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class FoxIntentActivity extends AppCompatActivity {
+    @Override // Hook for wrapped activity
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(
+                FoxProcessExt.contextWrapperHelper
+                        .attachBaseContext(this, newBase));
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    protected void attachBaseContextReal(Context newBase) {
+        super.attachBaseContext(newBase);
+    }
+
     @Override
     public void startActivity(Intent intent) {
         Activity receiver = this.getIntentReceiver();
@@ -233,7 +246,7 @@ public class FoxIntentActivity extends AppCompatActivity {
     }
 
     @CallSuper
-    public Intent patchIntent(Intent intent) {
+    protected Intent patchIntent(Intent intent) {
         if (intent == null) return null;
         return FoxProcessExt.patchIntent(intent);
     }

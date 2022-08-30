@@ -1,9 +1,9 @@
 package com.fox2code.foxcompat.internal;
 
+import android.app.Activity;
 import android.app.ActivityThread;
 import android.app.Application;
 import android.content.ComponentName;
-import android.content.ContentProvider;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -36,15 +36,16 @@ public final class FoxProcessExt {
     private static final String REAL_PACKAGE_NAME = "realPackageName";
     private static final String WRAPPED_PACKAGE_NAME = "wrappedPackageName";
     private static final String ON_REDIRECTED = "onRedirectComponentName";
+    private static final String CONTEXT_WRAPPER_HELPER = "contextWrapperHelper";
     static final String EXTRA_ORIGINAL_TARGET = "original_target";
     private static final HashMap<String, Object> processExtMap;
     private static final Method attachBaseContext;
     private static final Map<String, Reference<Application>> applications;
     private static final Map<ComponentName, ComponentName> componentsRedirects;
-    private static final Map<String, ContentProvider> contentProviders;
     private static final Consumer<ComponentName> onRedirectComponentName;
     private static final String realPackageName, wrappedPackageName;
     private static Reference<Application> initialApplication;
+    static final ContextWrapperHelperOut contextWrapperHelper;
 
     static {
         Properties properties = System.getProperties();
@@ -57,10 +58,10 @@ public final class FoxProcessExt {
         processExtMap = processExtMapTmp;
         applications = obtainMap("applications");
         componentsRedirects = obtainMap("redirects");
-        contentProviders = obtainMap("providers");
         onRedirectComponentName = getConsumer(ON_REDIRECTED);
         realPackageName = stringIfy(processExtMapTmp.get(REAL_PACKAGE_NAME));
         wrappedPackageName = stringIfy(processExtMapTmp.get(WRAPPED_PACKAGE_NAME));
+        contextWrapperHelper = new ContextWrapperHelperOut(getObserver(CONTEXT_WRAPPER_HELPER));
         try {
             (attachBaseContext = ContextWrapper.class.getDeclaredMethod(
                     "attachBaseContext", Context.class)).setAccessible(true);
@@ -171,7 +172,8 @@ public final class FoxProcessExt {
         if (componentName == null) return intent;
         ComponentName newComponent = componentsRedirects.get(componentName);
         if (newComponent == null) return intent;
-        onRedirectComponentName.accept(componentName);
+        if (onRedirectComponentName != null)
+            onRedirectComponentName.accept(componentName);
         intent = new Intent(intent);
         if (!newComponent.getPackageName().equals(newComponent.getPackageName()) &&
                 !newComponent.getPackageName().equals(realPackageName)) {
@@ -200,5 +202,25 @@ public final class FoxProcessExt {
             }
         }
         return Objects.requireNonNull(currentApplication);
+    }
+
+    static class ContextWrapperHelperOut {
+        private final Context[] mBuffer = new Context[2];
+        private final Observer mObserver;
+
+        ContextWrapperHelperOut(Observer observer) {
+            this.mObserver = observer;
+        }
+
+        public Context attachBaseContext(Activity activity, Context base) {
+            if (mObserver != null) {
+                mBuffer[0] = activity;
+                mBuffer[1] = base;
+                mObserver.update(null, mBuffer);
+                return mBuffer[1];
+            } else {
+                return base;
+            }
+        }
     }
 }

@@ -183,6 +183,11 @@ public final class FoxCompat {
         return Build.VERSION.SDK_INT <= maxTargetSdk || getHiddenApiStatus(context);
     }
 
+    public static boolean checkReflectionInternal(int maxTargetSdk) {
+        tryUnlockHiddenApisInternal();
+        return Build.VERSION.SDK_INT <= maxTargetSdk || hiddenApis;
+    }
+
     @Nullable
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> makeMapMutable(Context context, Map<K, V> map) {
@@ -284,7 +289,7 @@ public final class FoxCompat {
                 setEdgeEffect(view, mEdgeGlowBottom, new StretchEdgeEffect(
                         context, view, StretchEdgeEffect.Direction.BOTTOM));
             } else if (view instanceof HorizontalScrollView) {
-                ((HorizontalScrollView) view).setOverScrollMode(View.OVER_SCROLL_NEVER);
+                view.setOverScrollMode(View.OVER_SCROLL_NEVER);
             }
         }
     };

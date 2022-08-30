@@ -21,7 +21,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 
@@ -36,6 +35,7 @@ import androidx.core.graphics.ColorUtils;
 
 import com.fox2code.foxcompat.internal.FoxAlert;
 import com.fox2code.foxcompat.internal.FoxCompat;
+import com.fox2code.foxcompat.internal.FoxIntentApplication;
 import com.fox2code.foxcompat.internal.FoxProcessExt;
 
 import java.io.File;
@@ -46,7 +46,8 @@ import java.lang.reflect.Method;
 import dalvik.system.BaseDexClassLoader;
 import rikka.core.util.ResourceUtils;
 
-public class FoxApplication extends Application implements FoxActivity.ApplicationCallbacks {
+public class FoxApplication extends FoxIntentApplication
+        implements FoxActivity.ApplicationCallbacks {
     private static final String TAG = "FoxApplication";
 
     private WeakReference<FoxActivity> mLastCompatActivity;
