@@ -18,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -68,13 +67,8 @@ public final class FoxProcessExt {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-        try {
-            initialApplication = new SoftReference<>(
-                    ActivityThread.currentApplication());
-        } catch (Throwable throwable) {
-            initialApplication = realPackageName != null ?
-                    applications.get(realPackageName) : null;
-        }
+        initialApplication = realPackageName != null ?
+                applications.get(realPackageName) : null;
     }
 
     private static String stringIfy(Object o) {
@@ -160,9 +154,12 @@ public final class FoxProcessExt {
     }
 
     public static void register(FoxApplication foxApplication) {
-        applications.put(foxApplication.getPackageName(), new SoftReference<>(foxApplication));
-        if (isRootLoader()) processExtMap.put(REAL_PACKAGE_NAME, foxApplication.getPackageName());
-        if (initialApplication == null) initialApplication = new WeakReference<>(foxApplication);
+        applications.put(foxApplication.getPackageName(), new WeakReference<>(foxApplication));
+        if (isRootLoader()) {
+            processExtMap.put(REAL_PACKAGE_NAME, foxApplication.getPackageName());
+            if (initialApplication == null || initialApplication.get() == null)
+                initialApplication = new WeakReference<>(foxApplication);
+        }
     }
 
     static Intent patchIntent(Intent intent) {
@@ -198,7 +195,7 @@ public final class FoxProcessExt {
         if (currentApplication == null) {
             currentApplication = ActivityThread.currentApplication();
             if (isRootLoader()) {
-                initialApplication = new SoftReference<>(currentApplication);
+                initialApplication = new WeakReference<>(currentApplication);
             }
         }
         return Objects.requireNonNull(currentApplication);

@@ -160,7 +160,6 @@ public final class FoxActivityView extends FrameLayout implements SavedStateRegi
             }
             mFoxActivity = null;
             mRealFrameLayout.removeAllViews();
-            mViewModelProviderFactory = null;
             return;
         }
         this.ensureInitialized();
@@ -176,7 +175,6 @@ public final class FoxActivityView extends FrameLayout implements SavedStateRegi
         }
         mFoxActivity = null;
         mRealFrameLayout.removeAllViews();
-        mViewModelProviderFactory = null;
         newFoxActivity.attachFoxActivityView(this);
         mFoxActivity = newFoxActivity;
         try {
@@ -238,6 +236,9 @@ public final class FoxActivityView extends FrameLayout implements SavedStateRegi
         } catch (ReflectiveOperationException ignored) {}
         if (mRealFrameLayout == this)
             super.onDetachedFromWindow();
+        mSavedInstanceState = null;
+        mFragmentManager = null;
+        mViewModelStore = null;
     }
 
     @Override

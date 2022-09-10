@@ -9,12 +9,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.Process;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fox2code.foxcompat.internal.AppTaskUtil;
 import com.fox2code.foxcompat.internal.FoxProcessExt;
 
 import java.util.List;
@@ -23,15 +21,13 @@ import java.util.List;
  * Compat version of {@link ActivityManager.AppTask}
  */
 public final class FoxAppTask implements Parcelable {
-    private static final int sProcessUid = Process.myUid();
-    public final int mOriginalTaskUid;
-    ActivityManager.AppTask mAppTask;
+    private ActivityManager.AppTask mAppTask;
     public final int mTaskId;
 
     public static final Creator<FoxAppTask> CREATOR = new Creator<FoxAppTask>() {
         @Override
         public FoxAppTask createFromParcel(Parcel in) {
-            return new FoxAppTask(in);
+            return new FoxAppTask(null, in.readInt());
         }
 
         @Override
@@ -40,14 +36,7 @@ public final class FoxAppTask implements Parcelable {
         }
     };
 
-    private FoxAppTask(Parcel in) {
-        mOriginalTaskUid = in.readInt();
-        mAppTask = AppTaskUtil.readFromParcel(in);
-        mTaskId = in.readInt();
-    }
-
     private FoxAppTask(ActivityManager.AppTask appTask, int taskId) {
-        mOriginalTaskUid = sProcessUid;
         mAppTask = appTask;
         mTaskId = taskId;
     }
@@ -59,8 +48,6 @@ public final class FoxAppTask implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
-        parcel.writeInt(mOriginalTaskUid);
-        AppTaskUtil.writeToParcel(parcel, mAppTask);
         parcel.writeInt(mTaskId);
     }
 
@@ -87,8 +74,7 @@ public final class FoxAppTask implements Parcelable {
         if (appTask != null) {
             return appTask.getTaskInfo();
         } else {
-            throwInvalidException();
-            return null;
+            throw new IllegalArgumentException("Unable to find task ID " + mTaskId);
         }
     }
 
@@ -119,15 +105,6 @@ public final class FoxAppTask implements Parcelable {
         }
     }
 
-    private void throwInvalidException() {
-        if (mOriginalTaskUid == sProcessUid) {
-            throw new IllegalArgumentException("Unable to find task ID " + mTaskId);
-        } else {
-            throw new IllegalArgumentException("Unable to find task ID " + mTaskId +
-                    " (Task info come from another application)");
-        }
-    }
-
     public int getTaskId() {
         return mTaskId;
     }
@@ -146,7 +123,7 @@ public final class FoxAppTask implements Parcelable {
             throw new IllegalArgumentException(
                     "'fallback' and 'source' cannot be defined at the same time");
         }
-        FoxAppTask appTask = null;
+        FoxAppTask appTask = source;
         ActivityManager am = (ActivityManager)
                 context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.AppTask> tasks = am.getAppTasks();
@@ -157,6 +134,10 @@ public final class FoxAppTask implements Parcelable {
                 if (recentTaskInfo != null) {
                     int iTaskId = getTaskId(recentTaskInfo);
                     if (iTaskId == taskId) {
+                        if (source != null) {
+                            source.mAppTask = task;
+                            return source;
+                        }
                         appTask = new FoxAppTask(task, iTaskId);
                         break;
                     }
