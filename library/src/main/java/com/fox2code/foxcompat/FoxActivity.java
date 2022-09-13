@@ -112,6 +112,7 @@ public class FoxActivity extends FoxIntentActivity {
     private boolean mOnCreateCalled = false;
     private boolean mIsRefreshUi = false;
     private boolean mHasHardwareNavBar;
+    private boolean mShouldSkipRefreshUi;
     private Drawable mActionBarBackground;
     private Boolean mActionBarHomeAsUp;
     private Boolean mActionBarVisible;
@@ -255,6 +256,7 @@ public class FoxActivity extends FoxIntentActivity {
             mHasHardwareNavBar = this.hasHardwareNavBar0();
             mDisplayCutoutHeight = FoxNotch.getNotchHeight(this);
             mCachedRotation = this.getRotation();
+            mShouldSkipRefreshUi = true;
             mOnCreateCalledOnce = true;
         }
         Resources.Theme theme = this.getTheme();
@@ -342,12 +344,18 @@ public class FoxActivity extends FoxIntentActivity {
             super.onResume();
             this.resetOnBackPressedTimeOut();
         }
-        this.refreshUI();
+        if (mShouldSkipRefreshUi) {
+            Log.d(TAG, "Skipping refreshUI() call, as activity was just created");
+            mShouldSkipRefreshUi = false;
+        } else {
+            this.refreshUI();
+        }
     }
 
     @Override
     protected void onPause() {
         mAppTask = null;
+        mShouldSkipRefreshUi = false;
         if (mFoxActivityView == null) {
             super.onPause();
         }
@@ -401,7 +409,8 @@ public class FoxActivity extends FoxIntentActivity {
     }
 
     @Override @CallSuper @RequiresApi(Build.VERSION_CODES.O)
-    public void onMultiWindowModeChanged(boolean isInMultiWindowMode, Configuration newConfig) {
+    public void onMultiWindowModeChanged(
+            boolean isInMultiWindowMode, @NonNull Configuration newConfig) {
         super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig);
         this.postWindowUpdated();
     }
