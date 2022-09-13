@@ -20,7 +20,7 @@ Note: Required libraries are imported automatically.
 ### Optional libraries
 
 - `com.google.android.material:material:1.6.1` (Forks are also supported)
-- [`dev.rikka.rikkax.core:core:1.4.0`](https://github.com/RikkaApps/RikkaX/tree/master/core/core)
+- [`dev.rikka.rikkax.core:core:1.4.1`](https://github.com/RikkaApps/RikkaX/tree/master/core/core)
 - [`com.github.KieronQuinn:MonetCompat:0.4.1`](https://github.com/KieronQuinn/MonetCompat)
 - [`org.lsposed.hiddenapibypass:hiddenapibypass:4.3`](https://github.com/LSPosed/AndroidHiddenApiBypass)
 - [`com.github.tiann:FreeReflection:3.1.0`](https://github.com/tiann/FreeReflection)
@@ -62,6 +62,6 @@ repositories {
 
 // Add to existing dependencies block
 dependencies {
-    implementation 'com.github.Fox2Code:FoxCompat:0.1.3'
+    implementation 'com.github.Fox2Code:FoxCompat:0.1.4'
 }
 ```
