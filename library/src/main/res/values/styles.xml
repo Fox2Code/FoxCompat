@@ -37,7 +37,7 @@
         <item name="colorAccent">@color/system_accent_light</item>
         <!-- Material support -->
         <item name="colorPrimary">@color/system_accent_light</item>
-        <item name="colorPrimaryVariant">@color/system_accent_variant_light</item>
+        <!-- <item name="colorPrimaryVariant">@color/system_accent_variant_light</item> -->
     </style>
 
     <style name="FoxCompat.Overrides.System.Dark" parent="NullParent">
@@ -52,10 +52,10 @@
         <item name="colorAccent">@color/system_accent_variant_dark</item>
         <!-- Material support -->
         <item name="colorPrimary">@color/system_accent_variant_dark</item>
-        <item name="colorPrimaryVariant">@color/system_accent_variant_dark</item>
+        <!-- <item name="colorPrimaryVariant">@color/system_accent_variant_dark</item> -->
     </style>
 
-    <!-- Used for LineageOS implementation -->
+<!-- Used for LineageOS implementation -->
     <style name="FoxCompat.Overrides.System.Black" parent="NullParent">
         <item name="systemAccentLight">@color/system_accent_light</item>
         <item name="systemAccentVariantLight">@color/system_accent_variant_light</item>
@@ -69,6 +69,6 @@
         <item name="colorAccent">@color/system_accent_variant_dark</item>
         <!-- Material support -->
         <item name="colorPrimary">@color/system_accent_variant_dark</item>
-        <item name="colorPrimaryVariant">@color/system_accent_variant_dark</item>
+        <!-- <item name="colorPrimaryVariant">@color/system_accent_variant_dark</item> -->
     </style>
 </resources>

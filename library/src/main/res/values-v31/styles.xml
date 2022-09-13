@@ -13,7 +13,7 @@
         <item name="colorAccent">@color/system_accent_light</item>
         <!-- Material support -->
         <item name="colorPrimary">@color/system_accent_light</item>
-        <item name="colorPrimaryVariant">@color/system_accent_variant_light</item>
+        <!-- <item name="colorPrimaryVariant">@color/system_accent_variant_light</item> -->
     </style>
 
     <style name="FoxCompat.Overrides.System.Dark" parent="NullParent">
@@ -29,6 +29,6 @@
         <item name="colorAccent">@color/system_accent_variant_dark</item>
         <!-- Material support -->
         <item name="colorPrimary">@color/system_accent_variant_dark</item>
-        <item name="colorPrimaryVariant">@color/system_accent_variant_dark</item>
+        <!-- <item name="colorPrimaryVariant">@color/system_accent_variant_dark</item> -->
     </style>
 </resources>
