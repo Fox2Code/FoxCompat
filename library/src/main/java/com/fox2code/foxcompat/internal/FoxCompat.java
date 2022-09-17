@@ -60,7 +60,6 @@ public final class FoxCompat {
     private static boolean hiddenApiBypass;
     private static boolean freeReflection;
     private static boolean hiddenApis;
-    private static Field asMutableMap;
 
     static {
         boolean samsungStatusBarManagerTmp, cyanogenModSettingsTmp,
@@ -170,41 +169,13 @@ public final class FoxCompat {
                 hiddenApis = true;
             } catch (Exception ignored) {}
         }
-        try {
-            (asMutableMap = Class.forName("java.util.Collections$UnmodifiableMap")
-                    .getDeclaredField("m")).setAccessible(true);
-        } catch (Exception ignored) {
-            asMutableMap = null;
-        }
     }
 
     // Hidden API block
     public static boolean checkReflection(Context context, int maxTargetSdk) {
-        return Build.VERSION.SDK_INT <= maxTargetSdk || getHiddenApiStatus(context);
-    }
-
-    public static boolean checkReflectionInternal(int maxTargetSdk) {
-        tryUnlockHiddenApisInternal();
-        return Build.VERSION.SDK_INT <= maxTargetSdk || hiddenApis;
-    }
-
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public static <K, V> Map<K, V> makeMapMutable(Context context, Map<K, V> map) {
-        if (asMutableMap == null) {
-            if (!getHiddenApiStatus(context)) return null;
-            try {
-                (asMutableMap = Class.forName("java.util.Collections$UnmodifiableMap")
-                        .getDeclaredField("m")).setAccessible(true);
-            } catch (Exception ignored) {
-                return null;
-            }
-        }
-        try {
-            return (Map<K, V>) asMutableMap.get(map);
-        } catch (Exception e) {
-            return null;
-        }
+        int effectiveTargetSdk = Math.min(Build.VERSION.SDK_INT,
+                context.getApplicationInfo().targetSdkVersion);
+        return effectiveTargetSdk <= maxTargetSdk || getHiddenApiStatus(context);
     }
 
     public static void tryUnlockHiddenApisInternal() {
@@ -286,10 +257,11 @@ public final class FoxCompat {
                         return;
                     }
                 }
+                // Top need bottom direction and bottom need top direction.
                 setEdgeEffect(view, mEdgeGlowTop, new StretchEdgeEffect(
-                        context, view, StretchEdgeEffect.Direction.TOP));
-                setEdgeEffect(view, mEdgeGlowBottom, new StretchEdgeEffect(
                         context, view, StretchEdgeEffect.Direction.BOTTOM));
+                setEdgeEffect(view, mEdgeGlowBottom, new StretchEdgeEffect(
+                        context, view, StretchEdgeEffect.Direction.TOP));
             } else if (view instanceof HorizontalScrollView) {
                 view.setOverScrollMode(View.OVER_SCROLL_NEVER);
             }
