@@ -38,9 +38,14 @@ public class FoxThemeWrapper extends ContextThemeWrapper {
     protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
         super.onApplyThemeResource(theme, resid, first);
         if (theme != null) {
-            boolean isLightTheme = FoxDisplay.isLightTheme(theme);
+            boolean isLightTheme = true;
             boolean useDynamicColors = mUseDynamicColors &&
                     FoxCompat.isDynamicAccentSupported(this);
+            try {
+                isLightTheme = FoxDisplay.isLightTheme(theme);
+            } catch (Exception ignored) {
+                useDynamicColors = false;
+            }
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && useDynamicColors) {
                 theme.applyStyle(isLightTheme ?
                         R.style.FoxCompat_Overrides_System :

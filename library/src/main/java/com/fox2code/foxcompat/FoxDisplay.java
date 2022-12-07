@@ -36,12 +36,10 @@ public final class FoxDisplay {
     public static boolean isLightTheme(Resources.Theme theme) {
         if (theme == null) return false;
         TypedValue typedValue = new TypedValue();
-        if (FoxCompat.googleMaterial) {
-            theme.resolveAttribute( // Check with google material first
-                    com.google.android.material.R.attr.isLightTheme, typedValue, true);
-            if (typedValue.type == TypedValue.TYPE_INT_BOOLEAN) {
-                return typedValue.data != 0;
-            }
+        theme.resolveAttribute( // Check with google material first
+                androidx.appcompat.R.attr.isLightTheme, typedValue, true);
+        if (typedValue.type == TypedValue.TYPE_INT_BOOLEAN) {
+            return typedValue.data != 0;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             theme.resolveAttribute(android.R.attr.isLightTheme, typedValue, true);
@@ -49,7 +47,7 @@ public final class FoxDisplay {
                 return typedValue.data != 0;
             }
         }
-        theme.resolveAttribute(android.R.attr.background, typedValue, true);
+        theme.resolveAttribute(android.R.attr.colorBackground, typedValue, true);
         if (typedValue.type >= TypedValue.TYPE_FIRST_COLOR_INT &&
                 typedValue.type <= TypedValue.TYPE_LAST_COLOR_INT) {
             return ColorUtils.calculateLuminance(typedValue.data) > 0.7D;
