@@ -14,8 +14,8 @@ import android.widget.EdgeEffect;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.TintTypedArray;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -35,7 +35,6 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Objects;
 
 import me.weishu.reflection.Reflection;
@@ -290,6 +289,20 @@ public final class FoxCompat {
                     ((CardView) view).setCardBackgroundColor(colorStateList);
             }
             a.recycle();
+        }
+    };
+
+    public static final LayoutInflaterFactory.OnViewCreatedListener
+            SWITCH_COMPAT_CRASH_FIX = (view, parent, name, context, attrs) -> {
+        // Fix a crash where a null CharSequence is passed to "android.text.StaticLayout"
+        if (view instanceof SwitchCompat) {
+            SwitchCompat switchCompat = ((SwitchCompat) view);
+            if (switchCompat.getTextOn() == null) {
+                switchCompat.setTextOn("");
+            }
+            if (switchCompat.getTextOff() == null) {
+                switchCompat.setTextOff("");
+            }
         }
     };
 

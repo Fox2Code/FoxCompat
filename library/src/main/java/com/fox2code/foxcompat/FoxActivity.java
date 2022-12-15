@@ -317,6 +317,7 @@ public class FoxActivity extends FoxIntentActivity {
         LayoutInflaterFactory layoutInflaterFactory =
                 new LayoutInflaterFactory(this.getDelegate())
                         .addOnViewCreatedListener(WindowInsetsHelper.Companion.getLISTENER())
+                        .addOnViewCreatedListener(FoxCompat.SWITCH_COMPAT_CRASH_FIX)
                         .addOnViewCreatedListener(FoxCompat.TOOLBAR_ALIGNMENT_FIX);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && FoxCompat.cardView) {
             layoutInflaterFactory.addOnViewCreatedListener(FoxCompat.CARD_VIEW_COLOR_FIX);
