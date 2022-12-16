@@ -70,7 +70,7 @@ public class FoxThemeWrapper extends ContextThemeWrapper {
     }
 
     public boolean isLightTheme() {
-        return FoxDisplay.isLightTheme(this.getTheme());
+        return FoxDisplay.isLightThemeSafe(this.getTheme());
     }
 
     @ColorInt

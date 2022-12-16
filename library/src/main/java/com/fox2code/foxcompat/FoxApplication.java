@@ -31,7 +31,6 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.ColorUtils;
 
 import com.fox2code.foxcompat.internal.FoxAlert;
 import com.fox2code.foxcompat.internal.FoxCompat;
@@ -131,20 +130,7 @@ public class FoxApplication extends FoxIntentApplication
     }
 
     public boolean isLightTheme() {
-        Resources.Theme theme = this.getTheme();
-        TypedValue typedValue = new TypedValue();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            theme.resolveAttribute(android.R.attr.isLightTheme, typedValue, true);
-            if (typedValue.type == TypedValue.TYPE_INT_BOOLEAN) {
-                return typedValue.data == 1;
-            }
-        }
-        theme.resolveAttribute(android.R.attr.background, typedValue, true);
-        if (typedValue.type >= TypedValue.TYPE_FIRST_COLOR_INT &&
-                typedValue.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-            return ColorUtils.calculateLuminance(typedValue.data) > 0.7D;
-        }
-        throw new IllegalStateException("Theme is not a valid theme!");
+        return FoxDisplay.isLightThemeSafe(this.getTheme());
     }
 
     @ColorInt

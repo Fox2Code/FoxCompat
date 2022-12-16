@@ -1,11 +1,12 @@
 package com.fox2code.foxcompat;
 
+import static com.fox2code.foxcompat.FoxDisplay.resolveId;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Looper;
@@ -333,22 +334,6 @@ public final class FoxActivityView extends FrameLayout implements SavedStateRegi
                     + "This view's id is " + resolveId(getContext(), getId()) + ". Make sure "
                     + "other views do not use the same id.");
         }
-    }
-
-    static Object resolveId(Context context, int id) {
-        Object fieldValue;
-        final Resources resources = context.getResources();
-        if (id >= 0) {
-            try {
-                fieldValue = resources.getResourceTypeName(id) + '/' +
-                        resources.getResourceEntryName(id);
-            } catch (Resources.NotFoundException e) {
-                fieldValue = "id/0x" + Integer.toHexString(id).toUpperCase();
-            }
-        } else {
-            fieldValue = "NO_ID";
-        }
-        return fieldValue;
     }
 
     @NonNull

@@ -42,6 +42,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -1026,7 +1027,11 @@ public class FoxActivity extends FoxIntentActivity {
     }
 
     public boolean isLightTheme() {
-        return FoxDisplay.isLightTheme(this.getTheme());
+        return FoxDisplay.isLightThemeSafe(this.getTheme());
+    }
+
+    public String resolveId(@IdRes int id) {
+        return FoxDisplay.resolveId(this, id);
     }
 
     @ColorInt
