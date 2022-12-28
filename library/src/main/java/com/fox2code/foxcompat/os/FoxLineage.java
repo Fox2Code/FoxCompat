@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat;
+package com.fox2code.foxcompat.os;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -9,7 +9,7 @@ import android.os.SystemProperties;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fox2code.foxcompat.internal.FoxCompat;
+import com.fox2code.foxcompat.app.internal.FoxCompat;
 
 import org.jetbrains.annotations.NotNull;
 

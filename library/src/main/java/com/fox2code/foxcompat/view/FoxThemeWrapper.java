@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat;
+package com.fox2code.foxcompat.view;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -12,7 +12,10 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 
-import com.fox2code.foxcompat.internal.FoxCompat;
+import com.fox2code.foxcompat.app.internal.FoxCompatR;
+import com.fox2code.foxcompat.os.FoxLineage;
+import com.fox2code.foxcompat.R;
+import com.fox2code.foxcompat.app.internal.FoxCompat;
 
 public class FoxThemeWrapper extends ContextThemeWrapper {
     boolean mUseDynamicColors;
@@ -60,10 +63,8 @@ public class FoxThemeWrapper extends ContextThemeWrapper {
                                 R.style.FoxCompat_Overrides_Base, true);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && useDynamicColors) {
                     theme.applyStyle(isLightTheme ?
-                            com.google.android.material.R.style.
-                                    ThemeOverlay_Material3_DynamicColors_Light :
-                            com.google.android.material.R.style.
-                                    ThemeOverlay_Material3_DynamicColors_Dark, true);
+                            FoxCompatR.style.ThemeOverlay_Material3_DynamicColors_Light :
+                            FoxCompatR.style.ThemeOverlay_Material3_DynamicColors_Dark, true);
                 }
             }
         }

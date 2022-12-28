@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat.internal;
+package com.fox2code.foxcompat.app.internal;
 
 import android.app.Activity;
 import android.app.ActivityThread;
@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 import androidx.core.util.Consumer;
 
-import com.fox2code.foxcompat.FoxApplication;
+import com.fox2code.foxcompat.app.FoxApplication;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

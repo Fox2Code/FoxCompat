@@ -1,5 +1,5 @@
 -dontwarn android.app.ActivityThread
--assumenosideeffects class com.fox2code.foxcompat.FoxActivity {
+-assumenosideeffects class com.fox2code.foxcompat.app.FoxActivity {
     getStatusBarHeight();
     getActionBarHeight();
     getNavigationBarHeight();
@@ -9,22 +9,22 @@
     hasHiddenApis();
     hasNotch();
 }
--assumenosideeffects class com.fox2code.foxcompat.FoxApplication {
+-assumenosideeffects class com.fox2code.foxcompat.app.FoxApplication {
     isLightTheme();
     isSystemProcess();
     hasHiddenApis();
 }
--assumenosideeffects class com.fox2code.foxcompat.FoxThemeWrapper {
+-assumenosideeffects class com.fox2code.foxcompat.view.FoxThemeWrapper {
     isLightTheme();
 }
--assumenosideeffects class com.fox2code.foxcompat.internal.FoxNotch {
-    getNotchHeight(com.fox2code.foxcompat.FoxActivity);
-    getNotchHeightModern(com.fox2code.foxcompat.FoxActivity);
-    getNotchHeightLegacy(com.fox2code.foxcompat.FoxActivity);
+-assumenosideeffects class com.fox2code.foxcompat.app.internal.FoxNotch {
+    getNotchHeight(com.fox2code.foxcompat.app.FoxActivity);
+    getNotchHeightModern(com.fox2code.foxcompat.app.FoxActivity);
+    getNotchHeightLegacy(com.fox2code.foxcompat.app.FoxActivity);
 }
--assumenosideeffects class com.fox2code.foxcompat.internal.FoxCompat {
+-assumenosideeffects class com.fox2code.foxcompat.app.internal.FoxCompat {
     checkReflectionInternal(int);
 }
--keep,allowobfuscation class com.fox2code.foxcompat.internal.FoxCompat {
+-keep,allowobfuscation class com.fox2code.foxcompat.app.internal.FoxCompat {
     <clinit>();
 }

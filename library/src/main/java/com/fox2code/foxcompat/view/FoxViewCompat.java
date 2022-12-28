@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat;
+package com.fox2code.foxcompat.view;
 
 import android.content.res.ColorStateList;
 import android.graphics.BlendMode;

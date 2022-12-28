@@ -1,6 +1,6 @@
-package com.fox2code.foxcompat;
+package com.fox2code.foxcompat.app;
 
-import static com.fox2code.foxcompat.FoxDisplay.resolveId;
+import static com.fox2code.foxcompat.view.FoxDisplay.resolveId;
 
 import android.app.Activity;
 import android.app.Application;
@@ -32,7 +32,8 @@ import androidx.lifecycle.ViewModelStore;
 import androidx.savedstate.SavedStateRegistry;
 import androidx.savedstate.SavedStateRegistryOwner;
 
-import com.fox2code.foxcompat.internal.FoxProcessExt;
+import com.fox2code.foxcompat.R;
+import com.fox2code.foxcompat.app.internal.FoxProcessExt;
 
 import java.lang.reflect.Constructor;
 import java.util.Objects;
@@ -42,7 +43,7 @@ import java.util.Objects;
  */
 public final class FoxActivityView extends FrameLayout implements SavedStateRegistryOwner {
     private static final String CLASS_NAME1 =
-            "com.fox2code.foxcompat.FoxActivityView";
+            "com.fox2code.foxcompat.app.FoxActivityView";
     private static final String CLASS_NAME2 =
             "com.fox2code.foxcompat.app.FoxActivityView";
     private static final String CLASS_NAME3 =

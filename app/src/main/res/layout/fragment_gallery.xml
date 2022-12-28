@@ -19,7 +19,7 @@
     layout_fitsSystemWindowsInsets may be needed as activities
     in FoxActivityView are not aware of systems bars.
     -->
-    <com.fox2code.foxcompat.FoxActivityView
+    <com.fox2code.foxcompat.app.FoxActivityView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="@id/textGallery"

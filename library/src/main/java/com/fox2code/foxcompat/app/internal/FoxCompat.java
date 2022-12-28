@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat.internal;
+package com.fox2code.foxcompat.app.internal;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -23,7 +23,7 @@ import androidx.core.os.BuildCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fox2code.foxcompat.FoxLineage;
+import com.fox2code.foxcompat.os.FoxLineage;
 import com.fox2code.foxcompat.R;
 import com.google.android.material.color.MaterialColors;
 import com.kieronquinn.monetcompat.core.MonetCompat;
@@ -281,10 +281,10 @@ public final class FoxCompat {
             CARD_VIEW_COLOR_FIX = (view, parent, name, context, attrs) -> {
         if (view instanceof CardView) {
             TintTypedArray a = TintTypedArray.obtainStyledAttributes(
-                    context, attrs, androidx.cardview.R.styleable.CardView);
-            if (a.hasValue(androidx.cardview.R.styleable.CardView_cardBackgroundColor)) {
+                    context, attrs, FoxCompatR.styleable.CardView);
+            if (a.hasValue(FoxCompatR.styleable.CardView_cardBackgroundColor)) {
                 ColorStateList colorStateList = a.getColorStateList(
-                        androidx.cardview.R.styleable.CardView_cardBackgroundColor);
+                        FoxCompatR.styleable.CardView_cardBackgroundColor);
                 if (colorStateList != null)
                     ((CardView) view).setCardBackgroundColor(colorStateList);
             }

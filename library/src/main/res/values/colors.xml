@@ -2,6 +2,7 @@
 <resources>
     <color name="black_transparent">#70000000</color>
     <color name="white_transparent">#70FFFFFF</color>
+    <color name="day_night_transparent">@color/white_transparent</color>
     <color name="transparent">#00000000</color>
     <color name="undefined">#00FFFFFF</color>
     <color name="black">#FF000000</color>

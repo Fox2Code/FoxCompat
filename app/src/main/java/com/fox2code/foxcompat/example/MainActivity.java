@@ -2,7 +2,7 @@ package com.fox2code.foxcompat.example;
 
 import android.os.Bundle;
 
-import com.fox2code.foxcompat.FoxActivity;
+import com.fox2code.foxcompat.app.FoxActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
@@ -21,6 +21,7 @@ public class MainActivity extends FoxActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this.disableDefaultSupportActionBar();
         this.setUseDynamicColors(true);
         super.onCreate(savedInstanceState);
 

@@ -71,4 +71,15 @@
         <item name="colorPrimary">@color/system_accent_variant_dark</item>
         <!-- <item name="colorPrimaryVariant">@color/system_accent_variant_dark</item> -->
     </style>
+    <!-- Fixes to fix edges cases in Android -->
+    <style name="FoxCompat.Fixes.TransparentWindowBackgroundWorkaround" parent="NullParent">
+        <!-- Undefined and transparent should both act the same, except
+        undefined may skip some buggy rendering optimization code -->
+        <item name="android:windowBackground">@color/undefined</item>
+    </style>
+    <style name="FoxCompat.Fixes.TranslucentWindowWallpaperWorkaround" parent="NullParent">
+        <!-- Fix using transparent colors for windows -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowShowWallpaper">true</item>
+    </style>
 </resources>

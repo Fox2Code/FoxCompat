@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat;
+package com.fox2code.foxcompat.os;
 
 import android.annotation.SuppressLint;
 import android.annotation.SystemService;
@@ -11,7 +11,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresPermission;
 
-import com.fox2code.foxcompat.internal.FoxCompat;
+import com.fox2code.foxcompat.app.internal.FoxCompat;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
  * Wrapper for {@link android.app.StatusBarManager},
  * use {@link SemStatusBarManager} if available.
  * */
+@SuppressWarnings("JavaReflectionMemberAccess")
 @SystemService(FoxStatusBarManager.FOX_STATUS_BAR_SERVICE)
 public final class FoxStatusBarManager {
     public static final String FOX_STATUS_BAR_SERVICE = "fox_statusbar";

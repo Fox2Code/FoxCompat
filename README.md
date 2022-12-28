@@ -10,6 +10,7 @@ You can check the [developer documentation](https://github.com/Fox2Code/FoxCompa
 
 ### Required libraries
 
+- `androidx.activity:activity:1.6.1` (Forks are also supported)
 - `androidx.appcompat:appcompat:1.5.1` (Forks are also supported)
 - `androidx.customview:customview:1.1.0` (Forks are also supported)
 - [`dev.rikka.rikkax.layoutinflater:layoutinflater:1.2.0`](https://github.com/RikkaApps/RikkaX/tree/master/layoutinflater)
@@ -19,7 +20,7 @@ Note: Required libraries are imported automatically.
 
 ### Optional libraries
 
-- `com.google.android.material:material:1.6.1` (Forks are also supported)
+- `com.google.android.material:material:1.7.0` (Forks are also supported)
 - [`dev.rikka.rikkax.core:core:1.4.1`](https://github.com/RikkaApps/RikkaX/tree/master/core/core)
 - [`com.github.KieronQuinn:MonetCompat:0.4.1`](https://github.com/KieronQuinn/MonetCompat)
 - [`org.lsposed.hiddenapibypass:hiddenapibypass:4.3`](https://github.com/LSPosed/AndroidHiddenApiBypass)

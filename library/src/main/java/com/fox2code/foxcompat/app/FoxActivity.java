@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat;
+package com.fox2code.foxcompat.app;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -12,6 +12,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,6 +52,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.WindowDecorActionBar;
 import androidx.appcompat.view.menu.ActionMenuItem;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityOptionsCompat;
@@ -63,13 +65,19 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.customview.widget.Openable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.SavedStateViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStore;
 
-import com.fox2code.foxcompat.internal.FoxCompat;
-import com.fox2code.foxcompat.internal.FoxNotch;
-import com.fox2code.foxcompat.internal.FoxIntentActivity;
+import com.fox2code.foxcompat.app.internal.FoxCompatR;
+import com.fox2code.foxcompat.os.FoxNavigationMode;
+import com.fox2code.foxcompat.view.FoxDisplay;
+import com.fox2code.foxcompat.os.FoxLineage;
+import com.fox2code.foxcompat.os.FoxStatusBarManager;
+import com.fox2code.foxcompat.view.FoxViewCompat;
+import com.fox2code.foxcompat.R;
+import com.fox2code.foxcompat.app.internal.FoxCompat;
+import com.fox2code.foxcompat.app.internal.FoxNotch;
+import com.fox2code.foxcompat.app.internal.FoxIntentActivity;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -97,16 +105,15 @@ public class FoxActivity extends FoxIntentActivity {
     LayoutInflaterFactory mLayoutInflaterFactory;
     private FoxStatusBarManager mFoxStatusBarManager;
     final WeakReference<FoxActivity> mSelfReference;
+    final FoxBackGestureHelper mFoxBackGestureHelper;
     private OnActivityResultCallback mOnActivityResultCallback;
-    private OnBackPressedCallback mOnBackPressedCallback;
-    private long mOnBackPressedTimeout; // Avoid accidental presses
-    private long mOnBackPressedTimeoutDrawer;
     private MenuItem.OnMenuItemClickListener mMenuClickListener;
     private CharSequence mMenuContentDescription;
     private FoxActivityView mFoxActivityView;
     private boolean mShouldNullifyWindow;
     private int mDisplayCutoutHeight = 0;
     @Rotation private int mCachedRotation = 0;
+    FoxNavigationMode mFoxNavigationMode;
     @StyleRes private int mSetThemeDynamic = 0;
     private boolean mAwaitOnWindowUpdate = false;
     private boolean mOnCreateCalledOnce = false;
@@ -125,6 +132,7 @@ public class FoxActivity extends FoxIntentActivity {
 
     public FoxActivity() {
         mSelfReference = new WeakReference<>(this);
+        mFoxBackGestureHelper = new FoxBackGestureHelper(this);
     }
 
     void attachFoxActivityView(FoxActivityView foxActivityView) {
@@ -257,8 +265,20 @@ public class FoxActivity extends FoxIntentActivity {
             mHasHardwareNavBar = this.hasHardwareNavBar0();
             mDisplayCutoutHeight = FoxNotch.getNotchHeight(this);
             mCachedRotation = this.getRotation();
+            mFoxBackGestureHelper.onCreateOnce();
             mShouldSkipRefreshUi = true;
             mOnCreateCalledOnce = true;
+        }
+        Application application = this.getApplicationIntent();
+        if (mFoxActivityView == null) {
+            if (application instanceof ApplicationCallbacks) {
+                ((ApplicationCallbacks) application).onCreateFoxActivity(this);
+            }
+        } else {
+            if (application instanceof ApplicationCallbacks) {
+                ((ApplicationCallbacks) application).onCreateEmbeddedFoxActivity(
+                        mFoxActivityView.getParentFoxActivity(), this);
+            }
         }
         Resources.Theme theme = this.getTheme();
         boolean isLightTheme = FoxDisplay.isLightTheme(theme);
@@ -278,24 +298,15 @@ public class FoxActivity extends FoxIntentActivity {
                     R.style.FoxCompat_Overrides_Base, true);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && useDynamicColors) {
                 theme.applyStyle(isLightTheme ?
-                        com.google.android.material.R.style.
-                                ThemeOverlay_Material3_DynamicColors_Light :
-                        com.google.android.material.R.style.
-                                ThemeOverlay_Material3_DynamicColors_Dark, true);
+                        FoxCompatR.style.ThemeOverlay_Material3_DynamicColors_Light :
+                        FoxCompatR.style.ThemeOverlay_Material3_DynamicColors_Dark, true);
             }
         }
-        Application application = this.getApplicationIntent();
         if (mFoxActivityView == null) {
-            if (application instanceof ApplicationCallbacks) {
-                ((ApplicationCallbacks) application).onCreateFoxActivity(this);
-            }
+            applyWindowThemeWorkarounds(theme);
             mShouldNullifyWindow = false;
             super.onCreate(savedInstanceState);
         } else {
-            if (application instanceof ApplicationCallbacks) {
-                ((ApplicationCallbacks) application).onCreateEmbeddedFoxActivity(
-                        mFoxActivityView.getParentFoxActivity(), this);
-            }
             mShouldNullifyWindow = true;
             try {
                 super.onCreate(savedInstanceState);
@@ -310,7 +321,7 @@ public class FoxActivity extends FoxIntentActivity {
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (mOnCreateCalledOnce) {
-            this.resetOnBackPressedTimeOut();
+            mFoxBackGestureHelper.resetOnBackPressedTimeOut();
         }
     }
 
@@ -342,9 +353,11 @@ public class FoxActivity extends FoxIntentActivity {
     protected void onResume() {
         mAppTask = null;
         mHasHardwareNavBar = this.hasHardwareNavBar0();
+        mFoxNavigationMode = FoxNavigationMode.queryForActivity(this);
         if (mFoxActivityView == null) {
             super.onResume();
-            this.resetOnBackPressedTimeOut();
+            mFoxBackGestureHelper.resetOnBackPressedTimeOut();
+            mFoxBackGestureHelper.updateState();
         }
         if (mShouldSkipRefreshUi) {
             Log.d(TAG, "Skipping refreshUI() call, as activity was just created");
@@ -466,48 +479,29 @@ public class FoxActivity extends FoxIntentActivity {
         }
     }
 
-    private void resetOnBackPressedTimeOut() {
-        mOnBackPressedTimeout = System.currentTimeMillis() + 250;
-    }
-
     public final void forceBackPressed() {
-        if (mFoxActivityView == null && !this.isFinishing()) {
-            mOnBackPressedTimeoutDrawer = 0;
-            mOnBackPressedTimeout = 0;
-            super.onBackPressed();
-        }
+        mFoxBackGestureHelper.forceBackPressed();
     }
 
     public final void pressBack() {
-        if (mFoxActivityView == null && !this.isFinishing()) {
-            mOnBackPressedTimeoutDrawer = 0;
-            mOnBackPressedTimeout = 0;
-            this.onBackPressed();
-        }
+        mFoxBackGestureHelper.pressBack();
     }
 
+    /**
+     * Use {@link #forceBackPressed()} instead.
+     *
+     * For WebView integration use {@link #linkWebViewToBackButton(WebView)}
+     */
     @Override
+    @Deprecated
+    @SuppressWarnings("DeprecatedIsStillUsed")
     public void onBackPressed() {
-        if (mOnBackPressedTimeout > System.currentTimeMillis()
-                || this.isFinishing()) return;
-        Openable openableDrawer = mDrawerOpenable;
-        if (openableDrawer != null) {
-            if (openableDrawer.isOpen()) {
-                this.resetOnBackPressedTimeOut();
-                openableDrawer.close();
-                return;
-            } else if (mOnBackPressedTimeoutDrawer >
-                    System.currentTimeMillis()) {
-                openableDrawer.close(); // Make app more responsive
-                return; // In case opening animation is still playing.
-            }
-        }
-        OnBackPressedCallback onBackPressedCallback = mOnBackPressedCallback;
-        mOnBackPressedCallback = null;
-        if (onBackPressedCallback == null ||
-                !onBackPressedCallback.onBackPressed(this)) {
-            if (mFoxActivityView == null)
-                super.onBackPressed();
+        mFoxBackGestureHelper.onBackPressed();
+    }
+
+    void super_onBackPressed() {
+        if (mFoxActivityView == null) {
+            super.onBackPressed();
         }
     }
 
@@ -582,9 +576,19 @@ public class FoxActivity extends FoxIntentActivity {
         }
     }
 
+    public void disableDefaultSupportActionBar() {
+        this.supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+    }
+
     @Override
+    @SuppressLint("RestrictedApi")
     public void setSupportActionBar(@Nullable Toolbar toolbar) {
         ActionBar actionBar = this.getSupportActionBar();
+        if (actionBar instanceof WindowDecorActionBar) {
+            throw new IllegalStateException( // Add message for developers! I hope it's enough! :3
+                    "Cannot call setSupportActionBar() while default action bar is being used!\n" +
+                    "Call disableDefaultSupportActionBar() early in onCreate() to use this method!");
+        }
         if (actionBar != null) {
             if (mActionBarVisible != null &&
                     mActionBarVisible != actionBar.isShowing()) {
@@ -754,6 +758,11 @@ public class FoxActivity extends FoxIntentActivity {
                 !"0".equals(SystemProperties.get("qemu.hw.mainkeys"));
     }
 
+    public FoxNavigationMode getNavigationMode() {
+        return mFoxNavigationMode != null ? mFoxNavigationMode :
+                FoxNavigationMode.queryForActivity(this);
+    }
+
     public void setActionBarExtraMenuButton(@DrawableRes int drawableResId,
                                             MenuItem.OnMenuItemClickListener menuClickListener) {
         this.setActionBarExtraMenuButton(drawableResId,
@@ -857,14 +866,13 @@ public class FoxActivity extends FoxIntentActivity {
     @Override
     protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
         if (resid != 0 && mSetThemeDynamic == resid) {
-            super.onApplyThemeResource(theme, resid, first);
             Activity parent = this.getParent();
             (parent == null ? this : parent).recreate();
             super.overridePendingTransition(
                     android.R.anim.fade_in, android.R.anim.fade_out);
-        } else {
-            super.onApplyThemeResource(theme, resid, first);
+            return; // We are recreating ourself anyway, so ignore theming logic.
         }
+        super.onApplyThemeResource(theme, resid, first);
         if (theme != null) {
             boolean isLightTheme = true;
             boolean useDynamicColors = mUseDynamicColors &&
@@ -888,12 +896,45 @@ public class FoxActivity extends FoxIntentActivity {
                         R.style.FoxCompat_Overrides_Base, true);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && useDynamicColors) {
                     theme.applyStyle(isLightTheme ?
-                            com.google.android.material.R.style.
-                                    ThemeOverlay_Material3_DynamicColors_Light :
-                            com.google.android.material.R.style.
-                                    ThemeOverlay_Material3_DynamicColors_Dark, true);
+                            FoxCompatR.style.ThemeOverlay_Material3_DynamicColors_Light :
+                            FoxCompatR.style.ThemeOverlay_Material3_DynamicColors_Dark, true);
                 }
             }
+            Application application = getApplicationIntent();
+            if (application instanceof ApplicationCallbacks) {
+                ((ApplicationCallbacks) application).onApplyFoxActivityThemeResource(this, theme, resid, first);
+            }
+            if (mFoxActivityView == null) {
+                applyWindowThemeWorkarounds(theme);
+            }
+        }
+    }
+
+    /**
+     * Fixes window bugs that require obscure or hard to find workarounds.
+     */
+    private static void applyWindowThemeWorkarounds(Resources.Theme theme) {
+        if (theme == null) return;
+        TypedValue typedValue = new TypedValue();
+        theme.resolveAttribute(android.R.attr.windowBackground, typedValue, true);
+        if (typedValue.type >= TypedValue.TYPE_FIRST_COLOR_INT &&
+                typedValue.type <= TypedValue.TYPE_LAST_COLOR_INT &&
+                typedValue.data == Color.TRANSPARENT) {
+            Log.d(TAG, "Applying workaround for fully transparent windows!");
+            theme.applyStyle(R.style.FoxCompat_Fixes_TransparentWindowBackgroundWorkaround, true);
+        }
+        if (typedValue.type >= TypedValue.TYPE_FIRST_COLOR_INT &&
+                typedValue.type <= TypedValue.TYPE_LAST_COLOR_INT &&
+                Color.alpha(typedValue.data) != 0xFF) {
+            theme.resolveAttribute(android.R.attr.windowIsTranslucent, typedValue, true);
+            if (typedValue.type == TypedValue.TYPE_INT_BOOLEAN && typedValue.data != 0) {
+                theme.resolveAttribute(android.R.attr.windowShowWallpaper, typedValue, true);
+                if (typedValue.type == TypedValue.TYPE_INT_BOOLEAN && typedValue.data != 0) {
+                    return; // Skip transparency workaround.
+                }
+            }
+            Log.d(TAG, "Applying wallpaper workaround for transparent windows!");
+            theme.applyStyle(R.style.FoxCompat_Fixes_TranslucentWindowWallpaperWorkaround, true);
         }
     }
 
@@ -903,11 +944,11 @@ public class FoxActivity extends FoxIntentActivity {
     }
 
     public void setOnBackPressedCallback(@Nullable OnBackPressedCallback onBackPressedCallback) {
-        mOnBackPressedCallback = onBackPressedCallback;
+        mFoxBackGestureHelper.setOnBackPressedCallback(onBackPressedCallback);
     }
 
     public OnBackPressedCallback getOnBackPressedCallback() {
-        return mOnBackPressedCallback;
+        return mFoxBackGestureHelper.getOnBackPressedCallback();
     }
 
     public void linkWebViewToBackButton(@NonNull WebView webView) {
@@ -915,19 +956,27 @@ public class FoxActivity extends FoxIntentActivity {
     }
 
     public void disableBackButton() {
-        if (mOnBackPressedCallback instanceof TrustedBackPressedListener) {
-            ((TrustedBackPressedListener) mOnBackPressedCallback).disable = true;
-        } else if (mOnBackPressedCallback != DISABLE_BACK_BUTTON) {
+        OnBackPressedCallback onBackPressedCallback =
+                mFoxBackGestureHelper.getOnBackPressedCallback();
+        if (onBackPressedCallback instanceof TrustedBackPressedListener) {
+            ((TrustedBackPressedListener) onBackPressedCallback).setTrustedDisable(true);
+        } else if (onBackPressedCallback != DISABLE_BACK_BUTTON) {
             this.setOnBackPressedCallback(DISABLE_BACK_BUTTON);
         }
     }
 
     public void enableBackButton() {
-        if (mOnBackPressedCallback instanceof TrustedBackPressedListener) {
-            ((TrustedBackPressedListener) mOnBackPressedCallback).disable = false;
-        } else if (mOnBackPressedCallback == DISABLE_BACK_BUTTON) {
+        OnBackPressedCallback onBackPressedCallback =
+                mFoxBackGestureHelper.getOnBackPressedCallback();
+        if (onBackPressedCallback instanceof TrustedBackPressedListener) {
+            ((TrustedBackPressedListener) onBackPressedCallback).setTrustedDisable(false);
+        } else if (onBackPressedCallback == DISABLE_BACK_BUTTON) {
             this.setOnBackPressedCallback((OnBackPressedCallback) null);
         }
+    }
+
+    public Openable getDrawerOpenable() {
+        return mDrawerOpenable;
     }
 
     public void setDrawerOpenable(Openable drawerOpenable) {
@@ -942,8 +991,7 @@ public class FoxActivity extends FoxIntentActivity {
                 if (drawerOpenable.isOpen()) {
                     drawerOpenable.close();
                 } else {
-                    mOnBackPressedTimeoutDrawer =
-                            System.currentTimeMillis() + 450;
+                    mFoxBackGestureHelper.applyDrawerTimeout();
                     drawerOpenable.open();
                 }
                 return true;
@@ -955,7 +1003,8 @@ public class FoxActivity extends FoxIntentActivity {
                 Log.e(TAG, "Failed to call getSupportActionBar", e);
                 compatActionBar = null; // Allow fallback to builtin actionBar.
             }
-            android.app.ActionBar actionBar = this.getActionBar();
+            android.app.ActionBar actionBar =
+                    compatActionBar == null ? this.getActionBar() : null;
             if (compatActionBar != null ? (compatActionBar.getDisplayOptions() &
                     androidx.appcompat.app.ActionBar.DISPLAY_HOME_AS_UP) != 0 :
                     actionBar != null && (actionBar.getDisplayOptions() &
@@ -1147,8 +1196,7 @@ public class FoxActivity extends FoxIntentActivity {
         if (mFoxActivityView != null) {
             if (mFoxActivityView.mViewModelProviderFactory == null) {
                 mFoxActivityView.mViewModelProviderFactory = (ViewModelProvider.Factory)
-                        new SavedStateViewModelFactory(getApplicationIntent(), mFoxActivityView,
-                                getIntent() != null ? getIntent().getExtras() : null);
+                        new ViewModelProvider.AndroidViewModelFactory(getApplicationIntent());
             }
             return mFoxActivityView.mViewModelProviderFactory;
         }
@@ -1190,6 +1238,11 @@ public class FoxActivity extends FoxIntentActivity {
 
     public boolean isEmbedded() {
         return mFoxActivityView != null;
+    }
+
+    public Activity getContainerActivity() {
+        return mFoxActivityView == null ? null :
+                mFoxActivityView.getParentFoxActivity();
     }
 
     public boolean hasHiddenApis() {
@@ -1280,17 +1333,24 @@ public class FoxActivity extends FoxIntentActivity {
     public interface ExternallyEmbeddable extends Embeddable {}
 
     public interface ApplicationCallbacks {
+        Intent patchIntent(FoxActivity activity, Intent intent);
+
         void onCreateFoxActivity(FoxActivity activity);
 
         void onCreateEmbeddedFoxActivity(Activity root, FoxActivity embedded);
 
         void onRefreshUI(FoxActivity activity);
 
-        Intent patchIntent(FoxActivity activity, Intent intent);
+        void onApplyFoxActivityThemeResource(
+                FoxActivity activity, Resources.Theme theme, int resid, boolean first);
     }
 
-    static abstract class TrustedBackPressedListener implements OnBackPressedCallback {
-        boolean disable;
+    static abstract class TrustedBackPressedListener implements FoxActivity.OnBackPressedCallback {
+        boolean mDisable;
+
+        void setTrustedDisable(boolean disable) {
+            mDisable = disable;
+        }
     }
 
     static final class WebViewBackPressedListener extends TrustedBackPressedListener {
@@ -1302,7 +1362,7 @@ public class FoxActivity extends FoxIntentActivity {
 
         @Override
         public boolean onBackPressed(FoxActivity compatActivity) {
-            if (this.disable) {
+            if (this.mDisable) {
                 compatActivity.setOnBackPressedCallback(this);
                 return true;
             }
@@ -1327,7 +1387,7 @@ public class FoxActivity extends FoxIntentActivity {
         @Override
         public boolean onBackPressed(FoxActivity compatActivity) {
             compatActivity.setOnBackPressedCallback(this);
-            if (!this.disable) this.runnable.run();
+            if (!this.mDisable) this.runnable.run();
             return true;
         }
     }

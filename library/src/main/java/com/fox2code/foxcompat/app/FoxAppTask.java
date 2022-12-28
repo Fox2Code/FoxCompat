@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat;
+package com.fox2code.foxcompat.app;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -13,7 +13,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fox2code.foxcompat.internal.FoxProcessExt;
+import com.fox2code.foxcompat.app.internal.FoxProcessExt;
 
 import java.util.List;
 

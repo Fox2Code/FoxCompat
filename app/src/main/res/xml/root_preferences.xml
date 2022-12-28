@@ -33,6 +33,13 @@
     </PreferenceCategory>
 
     <PreferenceCategory app:title="LineageOS / CyanogenMod / Android 9+">
+        <SwitchPreferenceCompat
+            app:key="transparent"
+            app:title="@string/use_transparency" />
+
+        <SwitchPreferenceCompat
+            app:key="allow_back"
+            app:title="@string/allow_back" />
 
         <Preference
             app:key="data"

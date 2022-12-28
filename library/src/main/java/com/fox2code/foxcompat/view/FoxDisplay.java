@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat;
+package com.fox2code.foxcompat.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -16,6 +16,8 @@ import androidx.annotation.Dimension;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.core.graphics.ColorUtils;
+
+import com.fox2code.foxcompat.app.FoxActivity;
 
 import org.jetbrains.annotations.Contract;
 

@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat.internal;
+package com.fox2code.foxcompat.app.internal;
 
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
@@ -14,7 +14,7 @@ import androidx.annotation.RestrictTo;
 import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.fox2code.foxcompat.FoxActivity;
+import com.fox2code.foxcompat.app.FoxActivity;
 
 import java.lang.reflect.Method;
 import java.util.Objects;

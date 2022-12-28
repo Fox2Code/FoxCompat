@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat.internal;
+package com.fox2code.foxcompat.app.internal;
 
 import android.app.Activity;
 import android.app.Application;

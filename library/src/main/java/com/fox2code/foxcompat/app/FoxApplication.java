@@ -1,4 +1,4 @@
-package com.fox2code.foxcompat;
+package com.fox2code.foxcompat.app;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -32,10 +32,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import com.fox2code.foxcompat.internal.FoxAlert;
-import com.fox2code.foxcompat.internal.FoxCompat;
-import com.fox2code.foxcompat.internal.FoxIntentApplication;
-import com.fox2code.foxcompat.internal.FoxProcessExt;
+import com.fox2code.foxcompat.view.FoxDisplay;
+import com.fox2code.foxcompat.os.FoxLineage;
+import com.fox2code.foxcompat.app.internal.FoxAlert;
+import com.fox2code.foxcompat.app.internal.FoxCompat;
+import com.fox2code.foxcompat.app.internal.FoxIntentApplication;
+import com.fox2code.foxcompat.app.internal.FoxProcessExt;
 
 import java.io.File;
 import java.io.IOException;
@@ -163,9 +165,15 @@ public class FoxApplication extends FoxIntentApplication
     @Override
     @CallSuper
     public void onRefreshUI(FoxActivity foxActivity) {
-        if (!foxActivity.isEmbedded()) {
+        if (!foxActivity.isEmbedded() && !foxActivity.isDestroyed()) {
             mLastCompatActivity = foxActivity.mSelfReference;
         }
+    }
+
+    @Override
+    public void onApplyFoxActivityThemeResource(
+            FoxActivity activity, Resources.Theme theme, int resid, boolean first) {
+        // theme.applyStyle(R.style.NullParent, true); // <- Example of valid usage.
     }
 
     @Nullable
