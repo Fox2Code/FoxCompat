@@ -59,7 +59,7 @@ afterEvaluate {
                 from components.release
                 groupId = project.group
                 artifactId = 'FoxCompat'
-                version = '1.2.0no' // JitPack only work with "1.0" as version here.
+                version = '1.2.0' // JitPack only work with "1.0" as version here.
             }
         }
     }
