@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.Fox2Code'
-version = '1.2.5'
+version = '1.2.6'
 
 android {
     namespace 'com.fox2code.foxcompat'
@@ -30,6 +30,14 @@ android {
     }
     buildFeatures {
         aidl true
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+        // ...
     }
 }
 
@@ -59,7 +67,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = project.group
                 artifactId = 'FoxCompat'
-                version = '1.2.5' // JitPack only work with "1.0" as version here.
+                version = '1.2.6'
             }
         }
     }
