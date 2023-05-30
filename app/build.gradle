@@ -29,8 +29,7 @@ android {
     buildFeatures {
         viewBinding true
     }
-    buildToolsVersion '33.0.2'
-    ndkVersion '25.2.9519653'
+
     configurations {
         all {
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
@@ -54,4 +53,5 @@ dependencies {
     // Fix an issue with class loading
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
+    implementation(project(":hiddenapis"))
 }
