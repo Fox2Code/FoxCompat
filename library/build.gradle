@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.Fox2Code'
-version = '1.2.2'
+version = '1.2.3'
 
 android {
     namespace 'com.fox2code.foxcompat'
@@ -57,7 +57,7 @@ afterEvaluate {
                 from components.release
                 groupId = project.group
                 artifactId = 'FoxCompat'
-                version = '1.2.2' // JitPack only work with "1.0" as version here.
+                version = '1.2.3' // JitPack only work with "1.0" as version here.
             }
         }
     }
