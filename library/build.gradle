@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.Fox2Code'
-version = '1.2.7'
+version = '1.2.8'
 
 android {
     namespace 'com.fox2code.foxcompat'
@@ -67,7 +67,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = project.group
                 artifactId = 'foxcompat'
-                version = '1.2.7'
+                version = '1.2.8'
             }
         }
     }
