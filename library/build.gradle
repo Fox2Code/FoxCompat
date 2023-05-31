@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.fox2code'
-version = '1.2.13'
+version = '1.2.14'
 
 android {
     namespace 'com.fox2code.foxcompat'
@@ -16,6 +16,10 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+        aarMetadata {
+            minCompileSdk = 29
+        }
     }
 
     buildTypes {
@@ -33,11 +37,10 @@ android {
     }
 
     publishing {
-        singleVariant('release') {
+        singleVariant("release") {
             withSourcesJar()
             withJavadocJar()
         }
-        // ...
     }
 }
 
@@ -66,10 +69,13 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = project.group
                 artifactId = 'foxcompat'
-                version = '1.2.13'
+                version = '1.2.14'
 
                 pom {
                     description('AndroidX AppCompat extensions')
+                }
+                afterEvaluate {
+                    from components.release
                 }
             }
         }
