@@ -60,6 +60,9 @@ afterEvaluate {
                 groupId = project.group
                 artifactId = 'hiddenapis'
                 version = '1.2.12'
+                pom {
+                    description('AndroidX AppCompat extensions - access to hidden APIs')
+                }
             }
         }
     }
