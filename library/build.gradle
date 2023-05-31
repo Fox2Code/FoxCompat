@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.fox2code'
-version = '1.2.12'
+version = '1.2.13'
 
 android {
     namespace 'com.fox2code.foxcompat'
@@ -66,7 +66,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = project.group
                 artifactId = 'foxcompat'
-                version = '1.2.12'
+                version = '1.2.13'
 
                 pom {
                     description('AndroidX AppCompat extensions')
