@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.fox2code.foxcompat.hiddenapis'
+    namespace 'com.github.Fox2Code.hiddenapis'
     compileSdk 33
 
     defaultConfig {
@@ -59,7 +59,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = project.group
                 artifactId = 'hiddenapis'
-                version = '1.2.11'
+                version = '1.2.12'
             }
         }
     }
