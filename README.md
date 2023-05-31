@@ -63,6 +63,6 @@ repositories {
 
 // Add to existing dependencies block
 dependencies {
-    implementation 'com.github.Fox2Code:FoxCompat:0.1.5'
+    implementation 'com.fox2code:FoxCompat:0.1.5'
 }
 ```

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.github.Fox2Code.hiddenapis'
+    namespace 'com.fox2code.hiddenapis'
     compileSdk 33
 
     defaultConfig {

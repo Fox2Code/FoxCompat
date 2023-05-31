@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+@SuppressWarnings("unused")
 public class FoxViewCompat {
     public static final ColorDrawable NULL_DRAWABLE = new NullDrawable();
 
@@ -48,9 +49,7 @@ public class FoxViewCompat {
 
     public static Rect getMargin(View view) {
         ViewGroup.LayoutParams layoutParams = getLayoutParams(view);
-        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams marginLayoutParams =
-                    (ViewGroup.MarginLayoutParams) layoutParams;
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
             return new Rect(marginLayoutParams.leftMargin, marginLayoutParams.topMargin,
                     marginLayoutParams.rightMargin, marginLayoutParams.bottomMargin);
         }
@@ -70,9 +69,7 @@ public class FoxViewCompat {
                 ViewGroup.LayoutParams.class.getName())) {
             layoutParams = new ViewGroup.MarginLayoutParams(layoutParams);
         }
-        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams marginLayoutParams =
-                    (ViewGroup.MarginLayoutParams) layoutParams;
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
             marginLayoutParams.leftMargin = leftMargin;
             marginLayoutParams.topMargin = topMargin;
             marginLayoutParams.rightMargin = rightMargin;
@@ -118,28 +115,21 @@ public class FoxViewCompat {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         Drawable background = view.getBackground();
         ViewParent viewParent = view.getParent();
-        if (!(viewParent instanceof ViewGroup))
+        if (!(viewParent instanceof ViewGroup viewRoot))
             throw new IllegalStateException("Can't redefine view at root of activity");
-        ViewGroup viewGroup = (ViewGroup) viewParent;
         if (layoutParams instanceof WrappedLayoutParams &&
                 viewParent instanceof FrameLayout) {
             background = ((WrappedLayoutParams) layoutParams).background;
             layoutParams = getLayoutParams(view);
+            //noinspection UnusedAssignment
             viewParent = viewParent.getParent();
         } else if (newParent == null) {
             return; // Removing something that doesn't exists return null
         }
-        ViewGroup viewRoot = (ViewGroup) viewParent;
         // Step 2 - Unbind old view
         int index;
-        if (viewGroup == viewRoot) {
-            index = viewRoot.indexOfChild(view);
-            viewRoot.removeViewAt(index);
-        } else {
-            index = viewRoot.indexOfChild(viewGroup);
-            viewRoot.removeViewAt(index);
-            viewGroup.removeAllViewsInLayout();
-        }
+        index = viewRoot.indexOfChild(view);
+        viewRoot.removeViewAt(index);
         // Step 3 - Bind new view
         if (newParent == null) {
             view.setBackground(background);

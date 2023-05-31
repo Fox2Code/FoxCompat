@@ -1,8 +1,10 @@
 package lineageos.style;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 
+@SuppressWarnings("unused")
 public class StyleInterface {
     public static final int STYLE_GLOBAL_AUTO_WALLPAPER = 0;
     public static final int STYLE_GLOBAL_AUTO_DAYTIME = 1;
@@ -12,8 +14,9 @@ public class StyleInterface {
     public static final String OVERLAY_DARK_DEFAULT = "org.lineageos.overlay.dark";
     public static final String OVERLAY_DARK_BLACK = "org.lineageos.overlay.black";
 
+    @SuppressLint("StaticFieldLeak")
     private static StyleInterface sInstance;
-    private Context mContext;
+    private final Context mContext;
 
     private StyleInterface(Context context) {
         this.mContext = context;

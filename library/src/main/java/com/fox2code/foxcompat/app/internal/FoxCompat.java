@@ -19,12 +19,11 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.TintTypedArray;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
-import androidx.core.os.BuildCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fox2code.foxcompat.os.FoxLineage;
 import com.fox2code.foxcompat.R;
+import com.fox2code.foxcompat.os.FoxLineage;
 import com.google.android.material.color.MaterialColors;
 import com.kieronquinn.monetcompat.core.MonetCompat;
 import com.kieronquinn.monetcompat.extensions.views.ViewExtensions_RecyclerViewKt;
@@ -56,9 +55,84 @@ public final class FoxCompat {
     public static final boolean rikkaXCore;
     public static final boolean monetCompat;
     public static final boolean cardView;
+    public static final LayoutInflaterFactory.OnViewCreatedListener
+            TOOLBAR_ALIGNMENT_FIX = (view, parent, name, context, attrs) -> {
+        if (view instanceof Toolbar) {
+            int insetStartWithNavigation = context.getResources().getDimensionPixelSize(
+                    androidx.appcompat.R.dimen.abc_action_bar_content_inset_with_nav);
+            ((Toolbar) view).setContentInsetStartWithNavigation(insetStartWithNavigation);
+        }
+    };
+    @SuppressLint("RestrictedApi")
+    public static final LayoutInflaterFactory.OnViewCreatedListener
+            CARD_VIEW_COLOR_FIX = (view, parent, name, context, attrs) -> {
+        if (view instanceof CardView) {
+            TintTypedArray a = TintTypedArray.obtainStyledAttributes(
+                    context, attrs, FoxCompatR.styleable.CardView);
+            if (a.hasValue(FoxCompatR.styleable.CardView_cardBackgroundColor)) {
+                ColorStateList colorStateList = a.getColorStateList(
+                        FoxCompatR.styleable.CardView_cardBackgroundColor);
+                if (colorStateList != null)
+                    ((CardView) view).setCardBackgroundColor(colorStateList);
+            }
+            a.recycle();
+        }
+    };
+    public static final LayoutInflaterFactory.OnViewCreatedListener
+            SWITCH_COMPAT_CRASH_FIX = (view, parent, name, context, attrs) -> {
+        // Fix a crash where a null CharSequence is passed to "android.text.StaticLayout"
+        if (view instanceof SwitchCompat switchCompat) {
+            if (switchCompat.getTextOn() == null) {
+                switchCompat.setTextOn("");
+            }
+            if (switchCompat.getTextOff() == null) {
+                switchCompat.setTextOff("");
+            }
+        }
+    };
     private static boolean hiddenApiBypass;
     private static boolean freeReflection;
     private static boolean hiddenApis;
+    // LayoutInflaterFactory.OnViewCreatedListener factory
+    private static Field mEdgeGlowTop, mEdgeGlowBottom;
+    @SuppressWarnings("JavaReflectionMemberAccess")
+    @SuppressLint("SoonBlockedPrivateApi")
+    public static final LayoutInflaterFactory.OnViewCreatedListener
+            STRETCH_OVERSCROLL = (view, parent, name, context, attrs) -> {
+        if (view instanceof RecyclerView) {
+            ViewExtensions_RecyclerViewKt.enableStretchOverscroll(
+                    (RecyclerView) view, null);
+        } else if (view instanceof NestedScrollView) {
+            ViewExtensions_ScrollViewKt.enableStretchOverscroll(
+                    (NestedScrollView) view, null);
+        } else if (checkReflection(context, Build.VERSION_CODES.P)) {
+            if (view instanceof ScrollView) {
+                if (mEdgeGlowBottom == null) {
+                    try {
+                        mEdgeGlowTop = ScrollView.class.getDeclaredField("mEdgeGlowTop");
+                        mEdgeGlowTop.setAccessible(true);
+                        mEdgeGlowBottom = ScrollView.class.getDeclaredField("mEdgeGlowBottom");
+                        mEdgeGlowBottom.setAccessible(true);
+                    } catch (Exception e) {
+                        return;
+                    }
+                }
+                // Top need bottom direction and bottom need top direction.
+                setEdgeEffect(view, mEdgeGlowTop, new StretchEdgeEffect(
+                        context, view, StretchEdgeEffect.Direction.BOTTOM));
+                setEdgeEffect(view, mEdgeGlowBottom, new StretchEdgeEffect(
+                        context, view, StretchEdgeEffect.Direction.TOP));
+            } else if (view instanceof HorizontalScrollView) {
+                view.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            }
+        }
+    };
+    @SuppressWarnings("ALL")
+    private static Boolean dynamicAccent = (Boolean)
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ?
+                    (Object) FoxCompat.googleMaterial :
+                    (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ?
+                            (Object) !(isAndroidSDK() || isOxygenOS()) : (Object) null));
 
     static {
         boolean samsungStatusBarManagerTmp, cyanogenModSettingsTmp,
@@ -124,6 +198,7 @@ public final class FoxCompat {
             googleMaterialTmp = false;
         }
         try {
+            //noinspection ResultOfMethodCallIgnored
             MonetCompat.getUseSystemColorsOnAndroid12();
             monetCompatTmp = true;
         } catch (Throwable ignored) {
@@ -166,7 +241,8 @@ public final class FoxCompat {
                 Objects.requireNonNull(setHiddenApiExemptions).invoke(
                         vmRuntime, new Object[]{new String[]{"L"}});
                 hiddenApis = true;
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -203,7 +279,8 @@ public final class FoxCompat {
             freeReflection = false;
             try {
                 Reflection.unseal(context);
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
             return hiddenApis = hasHiddenAPI0();
         }
         return false;
@@ -215,7 +292,8 @@ public final class FoxCompat {
             try { // Check this for Android 10+ just in case.
                 HardwareRenderer.class.getMethod("setContextPriority", int.class);
                 return true;
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
         try {
             ThreadedRenderer.class.getMethod("setContextPriority", int.class);
@@ -225,96 +303,15 @@ public final class FoxCompat {
         }
     }
 
-    // LayoutInflaterFactory.OnViewCreatedListener factory
-    private static Field mEdgeGlowTop, mEdgeGlowBottom;
-
     private static void setEdgeEffect(Object o, Field field, EdgeEffect edgeEffect) {
         try {
             field.set(o, edgeEffect);
-        } catch (IllegalAccessException ignored) {}
+        } catch (IllegalAccessException ignored) {
+        }
     }
 
-    @SuppressWarnings("JavaReflectionMemberAccess")
-    @SuppressLint("SoonBlockedPrivateApi")
-    public static final LayoutInflaterFactory.OnViewCreatedListener
-            STRETCH_OVERSCROLL = (view, parent, name, context, attrs) -> {
-        if (view instanceof RecyclerView) {
-            ViewExtensions_RecyclerViewKt.enableStretchOverscroll(
-                    (RecyclerView) view, null);
-        } else if (view instanceof NestedScrollView) {
-            ViewExtensions_ScrollViewKt.enableStretchOverscroll(
-                    (NestedScrollView) view, null);
-        } else if (checkReflection(context, Build.VERSION_CODES.P)) {
-            if (view instanceof ScrollView) {
-                if (mEdgeGlowBottom == null) {
-                    try {
-                        mEdgeGlowTop = ScrollView.class.getDeclaredField("mEdgeGlowTop");
-                        mEdgeGlowTop.setAccessible(true);
-                        mEdgeGlowBottom = ScrollView.class.getDeclaredField("mEdgeGlowBottom");
-                        mEdgeGlowBottom.setAccessible(true);
-                    } catch (Exception e) {
-                        return;
-                    }
-                }
-                // Top need bottom direction and bottom need top direction.
-                setEdgeEffect(view, mEdgeGlowTop, new StretchEdgeEffect(
-                        context, view, StretchEdgeEffect.Direction.BOTTOM));
-                setEdgeEffect(view, mEdgeGlowBottom, new StretchEdgeEffect(
-                        context, view, StretchEdgeEffect.Direction.TOP));
-            } else if (view instanceof HorizontalScrollView) {
-                view.setOverScrollMode(View.OVER_SCROLL_NEVER);
-            }
-        }
-    };
-
-    public static final LayoutInflaterFactory.OnViewCreatedListener
-            TOOLBAR_ALIGNMENT_FIX = (view, parent, name, context, attrs) -> {
-        if (view instanceof Toolbar) {
-            int insetStartWithNavigation = context.getResources().getDimensionPixelSize(
-                    androidx.appcompat.R.dimen.abc_action_bar_content_inset_with_nav);
-            ((Toolbar) view).setContentInsetStartWithNavigation(insetStartWithNavigation);
-        }
-    };
-
-    @SuppressLint("RestrictedApi")
-    public static final LayoutInflaterFactory.OnViewCreatedListener
-            CARD_VIEW_COLOR_FIX = (view, parent, name, context, attrs) -> {
-        if (view instanceof CardView) {
-            TintTypedArray a = TintTypedArray.obtainStyledAttributes(
-                    context, attrs, FoxCompatR.styleable.CardView);
-            if (a.hasValue(FoxCompatR.styleable.CardView_cardBackgroundColor)) {
-                ColorStateList colorStateList = a.getColorStateList(
-                        FoxCompatR.styleable.CardView_cardBackgroundColor);
-                if (colorStateList != null)
-                    ((CardView) view).setCardBackgroundColor(colorStateList);
-            }
-            a.recycle();
-        }
-    };
-
-    public static final LayoutInflaterFactory.OnViewCreatedListener
-            SWITCH_COMPAT_CRASH_FIX = (view, parent, name, context, attrs) -> {
-        // Fix a crash where a null CharSequence is passed to "android.text.StaticLayout"
-        if (view instanceof SwitchCompat) {
-            SwitchCompat switchCompat = ((SwitchCompat) view);
-            if (switchCompat.getTextOn() == null) {
-                switchCompat.setTextOn("");
-            }
-            if (switchCompat.getTextOff() == null) {
-                switchCompat.setTextOff("");
-            }
-        }
-    };
-
-    @SuppressWarnings("ALL")
-    private static Boolean dynamicAccent = (Boolean)
-            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ?
-                    (Object) FoxCompat.googleMaterial :
-            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ?
-                    (Object) !(isAndroidSDK() || isOxygenOS()) : (Object) null));
-
     public static boolean isOxygenOS() {
-        if (BuildCompat.isAtLeastS()) return false;
+        if (Build.VERSION.SDK_INT >= 31) return false;
         String roRomVersion = SystemProperties.get("ro.rom.version", "").trim();
         String roOxygenVersion = SystemProperties.get("ro.oxygen.version", "").trim();
         return roRomVersion.contains("Oxygen OS") || roRomVersion.contains("O2_BETA") ||
@@ -336,7 +333,7 @@ public final class FoxCompat {
         return dynamicAccent = FoxLineage.getFoxLineage(context).hasLineageStyles() &&
                 (lightType >= TypedValue.TYPE_FIRST_COLOR_INT &&
                         lightType <= TypedValue.TYPE_LAST_COLOR_INT) &&
-                        (darkType >= TypedValue.TYPE_FIRST_COLOR_INT &&
-                                darkType <= TypedValue.TYPE_LAST_COLOR_INT);
+                (darkType >= TypedValue.TYPE_FIRST_COLOR_INT &&
+                        darkType <= TypedValue.TYPE_LAST_COLOR_INT);
     }
 }

@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.Parcel;
@@ -41,6 +42,7 @@ import java.util.Objects;
 /**
  * View that allow to include a FoxActivity
  */
+@SuppressWarnings("unused")
 public final class FoxActivityView extends FrameLayout implements SavedStateRegistryOwner {
     private static final String CLASS_NAME1 =
             "com.fox2code.foxcompat.app.FoxActivityView";
@@ -125,10 +127,21 @@ public final class FoxActivityView extends FrameLayout implements SavedStateRegi
             mExternal = mFragmentManager == null;
         } else mExternal = true;
         if (activity == null && mRealFrameLayout == this) {
-            TypedArray a = getContext().obtainStyledAttributes(
-                    attrs, R.styleable.FoxActivityView, defStyleAttr, 0);
-            activity = a.getString(R.styleable.FoxActivityView_activity);
-            a.recycle();
+            // for api > 31, use typedarray with try-with-resources
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                try (TypedArray a = getContext().obtainStyledAttributes(
+                        attrs, R.styleable.FoxActivityView, defStyleAttr, 0)) {
+                    activity = a.getString(R.styleable.FoxActivityView_activity);
+                    a.recycle();
+                } catch (Throwable ignored) {}
+            } else {
+                try {
+                    TypedArray a = getContext().obtainStyledAttributes(
+                            attrs, R.styleable.FoxActivityView, defStyleAttr, 0);
+                    activity = a.getString(R.styleable.FoxActivityView_activity);
+                    a.recycle();
+                } catch (Throwable ignored) {}
+            }
         }
         if (activity != null && !activity.isEmpty()) {
             String packageName = this.getContext().getPackageName();
@@ -354,7 +367,7 @@ public final class FoxActivityView extends FrameLayout implements SavedStateRegi
     }
 
     public static class SavedState extends BaseSavedState implements Parcelable {
-        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+        public static final Creator<SavedState> CREATOR = new Creator<>() {
             @Override
             public SavedState createFromParcel(Parcel source) {
                 return new SavedState(source);

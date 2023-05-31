@@ -59,7 +59,6 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.internal.view.SupportMenuItem;
-import androidx.core.os.BuildCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.customview.widget.Openable;
@@ -88,6 +87,7 @@ import rikka.core.res.ResourcesCompatLayoutInflaterListener;
 import rikka.insets.WindowInsetsHelper;
 import rikka.layoutinflater.view.LayoutInflaterFactory;
 
+@SuppressWarnings("unused")
 public class FoxActivity extends FoxIntentActivity {
     private static final String EXTRA_FADE_OUT = "extra_fade_out";
     public static final String EXTRA_FOX_FINISH_ANIMATION = "extra_fox_finish_animation";
@@ -102,6 +102,7 @@ public class FoxActivity extends FoxIntentActivity {
                     return true;
                 }
             };
+    public static final Animation[] ANIMATIONS = Animation.values();
     LayoutInflaterFactory mLayoutInflaterFactory;
     private FoxStatusBarManager mFoxStatusBarManager;
     final WeakReference<FoxActivity> mSelfReference;
@@ -338,7 +339,7 @@ public class FoxActivity extends FoxIntentActivity {
             layoutInflaterFactory.addOnViewCreatedListener(
                     ResourcesCompatLayoutInflaterListener.getInstance());
         }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && !BuildCompat.isAtLeastS()
+        if (!(Build.VERSION.SDK_INT >= 31)
                 && FoxCompat.monetCompat) { // Add Overscroll effect with Monet library
             layoutInflaterFactory.addOnViewCreatedListener(FoxCompat.STRETCH_OVERSCROLL);
         }
@@ -440,7 +441,7 @@ public class FoxActivity extends FoxIntentActivity {
             }
             int index = this.getIntent().getIntExtra(EXTRA_FOX_FINISH_ANIMATION, -1);
             try {
-                finishAnimation = Animation.values()[index];
+                finishAnimation = ANIMATIONS[index];
             } catch (IndexOutOfBoundsException ignored) {}
         }
         super.finish();
@@ -489,7 +490,7 @@ public class FoxActivity extends FoxIntentActivity {
 
     /**
      * Use {@link #forceBackPressed()} instead.
-     *
+     * <p>
      * For WebView integration use {@link #linkWebViewToBackButton(WebView)}
      */
     @Override
@@ -518,9 +519,10 @@ public class FoxActivity extends FoxIntentActivity {
         if (compatActionBar != null) {
             compatActionBar.setDisplayHomeAsUpEnabled(showHomeAsUp);
         } else {
-            android.app.ActionBar actionBar = this.getActionBar();
-            if (actionBar != null)
+            ActionBar actionBar = this.getSupportActionBar();
+            if (actionBar != null) {
                 actionBar.setDisplayHomeAsUpEnabled(showHomeAsUp);
+            }
         }
     }
 
@@ -536,7 +538,7 @@ public class FoxActivity extends FoxIntentActivity {
         if (compatActionBar != null) {
             compatActionBar.hide();
         } else {
-            android.app.ActionBar actionBar = this.getActionBar();
+            ActionBar actionBar = this.getSupportActionBar();
             if (actionBar != null)
                 actionBar.hide();
         }
@@ -554,7 +556,7 @@ public class FoxActivity extends FoxIntentActivity {
         if (compatActionBar != null) {
             compatActionBar.show();
         } else {
-            android.app.ActionBar actionBar = this.getActionBar();
+            ActionBar actionBar = this.getSupportActionBar();
             if (actionBar != null)
                 actionBar.show();
         }
@@ -571,7 +573,7 @@ public class FoxActivity extends FoxIntentActivity {
         if (compatActionBar != null) {
             return compatActionBar.getCustomView();
         } else {
-            android.app.ActionBar actionBar = this.getActionBar();
+            ActionBar actionBar = this.getSupportActionBar();
             return actionBar != null ? actionBar.getCustomView() : null;
         }
     }
@@ -632,7 +634,7 @@ public class FoxActivity extends FoxIntentActivity {
                     Math.max(customView == null ? 0 : customView.getHeight(),
                             compatActionBar.getHeight()) : 0;
         } else {
-            android.app.ActionBar actionBar = this.getActionBar();
+            ActionBar actionBar = this.getSupportActionBar();
             return actionBar != null && (actionBar.isShowing() || ((
                     customView = actionBar.getCustomView()) != null &&
                     customView.getVisibility() == View.VISIBLE)) ?
@@ -655,7 +657,7 @@ public class FoxActivity extends FoxIntentActivity {
         if (compatActionBar != null) {
             compatActionBar.setBackgroundDrawable(drawable);
         } else {
-            android.app.ActionBar actionBar = this.getActionBar();
+            ActionBar actionBar = this.getSupportActionBar();
             if (actionBar != null)
                 actionBar.setBackgroundDrawable(drawable);
         }
@@ -746,7 +748,7 @@ public class FoxActivity extends FoxIntentActivity {
     public boolean hasSoftwareNavBar() {
         if (mFoxActivityView == null) return false;
         if (!this.hasHardwareNavBar()) return true;
-        int id = Resources.getSystem().getIdentifier(
+        @SuppressLint("DiscouragedApi") int id = Resources.getSystem().getIdentifier(
                 "config_showNavigationBar", "bool", "android");
         return (id > 0 && Resources.getSystem().getBoolean(id)) ||
                 FoxLineage.getFoxLineage(this).isForceNavBar();
@@ -939,8 +941,8 @@ public class FoxActivity extends FoxIntentActivity {
     }
 
     public void setOnBackPressedRunnable(@Nullable Runnable onBackPressedCallback) {
-        this.setOnBackPressedCallback((OnBackPressedCallback) (onBackPressedCallback != null ?
-                new RunnableBackPressedListener(onBackPressedCallback) : null));
+        this.setOnBackPressedCallback(onBackPressedCallback != null ?
+                new RunnableBackPressedListener(onBackPressedCallback) : null);
     }
 
     public void setOnBackPressedCallback(@Nullable OnBackPressedCallback onBackPressedCallback) {
@@ -971,7 +973,7 @@ public class FoxActivity extends FoxIntentActivity {
         if (onBackPressedCallback instanceof TrustedBackPressedListener) {
             ((TrustedBackPressedListener) onBackPressedCallback).setTrustedDisable(false);
         } else if (onBackPressedCallback == DISABLE_BACK_BUTTON) {
-            this.setOnBackPressedCallback((OnBackPressedCallback) null);
+            this.setOnBackPressedCallback(null);
         }
     }
 
@@ -983,6 +985,7 @@ public class FoxActivity extends FoxIntentActivity {
         mDrawerOpenable = drawerOpenable;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -1003,8 +1006,8 @@ public class FoxActivity extends FoxIntentActivity {
                 Log.e(TAG, "Failed to call getSupportActionBar", e);
                 compatActionBar = null; // Allow fallback to builtin actionBar.
             }
-            android.app.ActionBar actionBar =
-                    compatActionBar == null ? this.getActionBar() : null;
+            ActionBar actionBar =
+                    compatActionBar == null ? this.getSupportActionBar() : null;
             if (compatActionBar != null ? (compatActionBar.getDisplayOptions() &
                     androidx.appcompat.app.ActionBar.DISPLAY_HOME_AS_UP) != 0 :
                     actionBar != null && (actionBar.getDisplayOptions() &
@@ -1054,7 +1057,6 @@ public class FoxActivity extends FoxIntentActivity {
         this.startActivityForResult(intent, null, onActivityResultCallback);
     }
 
-    @SuppressWarnings("deprecation")
     public void startActivityForResult(Intent intent, @Nullable Bundle options,
                                        OnActivityResultCallback onActivityResultCallback) {
         super.startActivityForResult(intent, INTENT_ACTIVITY_REQUEST_CODE, options);
@@ -1195,8 +1197,7 @@ public class FoxActivity extends FoxIntentActivity {
     public ViewModelProvider.Factory getDefaultViewModelProviderFactory() {
         if (mFoxActivityView != null) {
             if (mFoxActivityView.mViewModelProviderFactory == null) {
-                mFoxActivityView.mViewModelProviderFactory = (ViewModelProvider.Factory)
-                        new ViewModelProvider.AndroidViewModelFactory(getApplicationIntent());
+                mFoxActivityView.mViewModelProviderFactory = new ViewModelProvider.AndroidViewModelFactory(getApplicationIntent());
             }
             return mFoxActivityView.mViewModelProviderFactory;
         }
@@ -1288,6 +1289,7 @@ public class FoxActivity extends FoxIntentActivity {
         boolean onBackPressed(FoxActivity compatActivity);
     }
 
+    @SuppressWarnings("SameParameterValue")
     @Nullable
     private FoxAppTask getAppTaskImpl(int taskId, boolean allowFallback) {
         // Don't cache AppTask if wrapped

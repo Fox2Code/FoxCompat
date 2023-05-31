@@ -3,11 +3,11 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.github.Fox2Code'
+group = 'com.fox2code'
 version = '1.2.12'
 
 android {
-    namespace 'com.github.Fox2Code.foxcompat'
+    namespace 'com.fox2code.foxcompat'
     compileSdk 33
 
     defaultConfig {
