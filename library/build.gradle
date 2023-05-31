@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.Fox2Code'
-version = '1.2.8'
+version = '1.2.9'
 
 android {
     namespace 'com.fox2code.foxcompat'
@@ -42,8 +42,6 @@ android {
 }
 
 dependencies {
-    // Don't forget to update readme on update
-    implementation(project(":hiddenapis"))
     api 'androidx.activity:activity-ktx:1.7.2'
     api 'androidx.appcompat:appcompat:1.6.1'
     api 'androidx.customview:customview:1.1.0'
@@ -66,8 +64,8 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 groupId = project.group
-                artifactId = 'foxcompat'
-                version = '1.2.8'
+                artifactId = 'appcompat'
+                version = '1.2.9'
             }
         }
     }
